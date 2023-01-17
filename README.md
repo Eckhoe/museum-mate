@@ -1,3 +1,15 @@
+# 4P02 Project - Museum Mate
+
+| Team Members |
+| ------------- |
+| Fahad Arain |
+| Maheen Samad |
+| David Bailey |
+| Robert Morabito |
+| Dana Dobrosavljevic |
+| Sarah Howcroft |
+| Jordan Bharati |
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
