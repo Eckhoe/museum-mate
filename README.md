@@ -1,18 +1,24 @@
 # 4P02 Project - Museum Mate
 
-| Team Members |
-| ------------- |
-| Fahad Arain |
-| Maheen Samad |
-| David Bailey |
-| Robert Morabito |
+| Team Members        |
+| ------------------- |
+| Fahad Arain         |
+| Maheen Samad        |
+| David Bailey        |
+| Robert Morabito     |
 | Dana Dobrosavljevic |
-| Sarah Howcroft |
-| Jordan Bharati |
+| Sarah Howcroft      |
+| Jordan Bharati      |
 
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+# Begin Local Development
+
+1. Install yarn version 3.3.1 & node version 18.13.0
+2. Clone repo to local machine
+3. Run `yarn install`. This will generate the required yarn files necessary for local development/hosting.
 
 ## Available Scripts
 
