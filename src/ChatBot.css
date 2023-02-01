@@ -1,0 +1,74 @@
+.form-container {
+    padding: 10px;
+    flex: auto;
+}
+
+.text-user {
+    text-align: right;
+    border-radius: 25px;
+    background: #0688f3;
+    padding: 15px;
+    margin: 10px;
+}
+
+.text-bot {
+    text-align: left;
+    border-radius: 25px;
+    background: #0688f3;
+    padding: 15px;
+    margin: 10px;
+}
+
+.chatbot-button {
+    padding: 15px;
+    margin: 5px;
+}
+
+.text-list {
+    padding: 25px;
+    flex: auto;
+    overflow: auto;
+    min-height: 50vh;
+    max-height: 50vh;
+}
+
+.chatbot {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 75%;
+}
+
+.chatbot-components{
+    padding: 10px;
+    border: 2px solid white;
+}
+
+.chatbot-header {
+    flex: 0 0 auto;
+    padding: 10px;
+    text-align: center;
+    overflow: hidden;
+}
+
+.shortcut-box{
+    padding: 10px;
+    margin: 5px;
+    border: 2px solid white;
+    width: min-content;
+}
+
+.shortcut-header{
+    margin: auto;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.shortcut-list{
+    display: flex;
+    padding: 10px;
+    margin-top: 10px;
+    margin-right: 20px;
+    margin-left: 20px;
+    margin-bottom: 5px;
+}
