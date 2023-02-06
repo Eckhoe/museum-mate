@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import './App.css';
 import { Login } from "./Login"
@@ -12,7 +13,6 @@ function App() {
     <div className="App">
     {
       currentForm === "login" ? <Login onFormSwitch={toggleForm} /> : <Chatbot  onFormSwitch={toggleForm}/>
-      
     }
     </div>
     
