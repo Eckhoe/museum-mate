@@ -2,11 +2,10 @@
   text-align: center;
   display: flex;
   min-height: 100vh;
-  align-items: center;
   justify-content: center;
   flex-wrap: wrap;
   color: white;
- background-color: #313639;
+  background-color: #404854;
 }
 .continue-button{
   display: block;
@@ -17,13 +16,13 @@
 }
 .login-page{
   padding: 5rem;
-  border:1px solid white;
+  border: 2px solid white;
   border-radius: 10px;
   margin: 0.5rem;
 }
 .continue-button{
   padding: .5rem;
-  border:1px solid white;
+  border: 2px solid white;
   border-radius: 10px;
 }
 label{
@@ -47,10 +46,9 @@ button{
   color:#313639;
 }
 
-.return-login{
-  position: fixed;
-  top: 0;
-  left: 0;
-  padding: 20px;
+.input-group{
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  margin-top: 75px;
 }
-

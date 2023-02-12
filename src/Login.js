@@ -2,7 +2,7 @@ import React, {useState, useEffect} from "react";
 import {auth, provider} from "./Firebase"
 import {signInWithPopup} from "firebase/auth";
 import Client from "./Client";
-import { useNavigate} from "react-router-dom"
+
 
 export const Login = (props) => {
     const [value, setValue] = useState('')

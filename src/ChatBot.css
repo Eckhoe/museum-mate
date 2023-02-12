@@ -9,6 +9,7 @@
     background: #0688f3;
     padding: 15px;
     margin: 10px;
+    position: relative;
 }
 
 .text-bot {
@@ -17,6 +18,20 @@
     background: #0688f3;
     padding: 15px;
     margin: 10px;
+    position: relative;
+}
+
+.text-user, .text-bot {
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .chatbot-button {
@@ -28,20 +43,27 @@
     padding: 25px;
     flex: auto;
     overflow: auto;
-    min-height: 50vh;
+    min-height: 56vh;
     max-height: 50vh;
+}
+
+::-webkit-scrollbar {
+    display: none;
 }
 
 .chatbot {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    min-height: min-content;
     width: 75%;
+    margin-top: 75px;
 }
 
 .chatbot-components{
     padding: 10px;
     border: 2px solid white;
+    border-radius: 25px;
+    background-color: #333;
 }
 
 .chatbot-header {
@@ -56,6 +78,7 @@
     margin: 5px;
     border: 2px solid white;
     width: min-content;
+    border-radius: 25px;
 }
 
 .shortcut-header{
@@ -71,4 +94,26 @@
     margin-right: 20px;
     margin-left: 20px;
     margin-bottom: 5px;
+}
+
+.return-login{
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 25px;
+}
+
+.text-container{
+    display: flex;
+    flex-direction: column;
+}
+
+.bot-container{
+    display: flex;
+    justify-content: flex-start;
+}
+
+.user-container{
+    display: flex;
+    justify-content: flex-end;
 }
