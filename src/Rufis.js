@@ -1,10 +1,10 @@
 //Query GPT
 export function QueryGPT(input) {
-  /*Things to be added for GPT useability*/
+  /*Things to be added for GPT usability*/
   return;
 }
 
-//Recieve Response
+//Receive Response
 export async function GPTResponse() {
-  return "This will be the responce that GPT gives. This is just temporary holder.";
+  return "This will be the response that GPT gives. This is just temporary holder.";
 }

@@ -1,164 +1,152 @@
-import React, { useEffect, useRef, useState } from "react";
-import { GPTResponse, QueryGPT } from "./Rufis";
+import React, {useEffect, useRef, useState} from "react";
+import {GPTResponse, QueryGPT} from "./Rufis";
 import "./App.css";
 import "./ChatBot.css";
 
 //message component
-const Text = ({ text }) => {
-  const textFrom = "text-" + (text.sender === "user" ? "user" : "bot");
-  const textFrom1 = (text.sender === "user" ? "user" : "bot") + "-container";
+const Text = ({text, onTextClick}) => {
+    const textFrom = "text-" + (text.sender === "user" ? "user" : "bot");
+    const textFrom1 = (text.sender === "user" ? "user" : "bot") + "-container";
 
-  return (
-      <div className="text-container">
-        <div className={textFrom1}>
-          <div className={textFrom}>
-            <div className="text-sender">{text.sender + ": "}</div>
-            <div className="text-content">{text.content}</div>
-          </div>
+    //limit the clickable suggestions in text list to chatbot only
+    const handleClick = () => {
+        if (text.sender === "bot") {
+            onTextClick(text.content);
+        }
+    };
+
+    return (
+        <div className="text-container">
+            <div className={textFrom1}>
+                <div className={textFrom} onClick={handleClick}
+                     style={{cursor: text.sender === "bot" ? "pointer" : "auto"}}>
+                    <div className="text-sender">{text.sender + ": "}</div>
+                    <div className="text-content">{text.content}</div>
+                </div>
+            </div>
         </div>
-      </div>
-  );
+    );
 };
 
 export const Chatbot = (props) => {
-  const [input, setInput] = useState("");
-  const [text, setText] = useState([{content: "Hello, I am a Chat-Bot, how can I help you?", sender: "bot"}]);
-  const textListEndRef = useRef(null);
+    const [input, setInput] = useState("");
+    const [text, setText] = useState([{content: "Hello, I am a Chat-Bot, how can I help you?", sender: "bot"}]);
+    const textListEndRef = useRef(null);
 
-  useEffect(() => {
-    textListEndRef.current.scrollIntoView({ behavior: "smooth" });
-  }, [text]);
+    //keep text list scrolled to the latest message
+    useEffect(() => {
+        if (textListEndRef.current) {
+            textListEndRef.current.scrollIntoView({behavior: "smooth"});
+        }
+    }, [text]);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (input.trim() === "") {
-      return;
+    //on enter add input to text list for display, get chatbot response and add to list as well
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        if (input.trim() === "") {
+            return;
+        }
+        const temp = [...text, {content: input, sender: "user"}];
+        QueryGPT(input);
+        const rufisResponse = await GPTResponse();
+        setText([...temp, {content: `${rufisResponse}`, sender: "bot"}]);
+        setInput("");
+    };
+
+    //fully reset the chatbot text list
+    const handleReset = () => {
+        setText([]);
+        setText([{content: "Hello, I am a Chat-Bot, how can I help you?", sender: "bot"}])
     }
-    const temp = [...text, { content: input, sender: "user" }];
-    QueryGPT(input);
-    const rufisResponse = await GPTResponse();
-    setText([...temp, { content: `${rufisResponse}`, sender: "bot" }]);
-    setInput("");
-  };
 
-  const handleReset = () => {
-    setText([]);
-    setText([{content: "Hello, I am a Chat-Bot, how can I help you?", sender: "bot"}])
-  }
+    //chatbot popup toggle
+    const [toggleOn, setToggle] = useState(false);
 
-  return (
-      <div className="chatbot">
+    //clickable suggestions from chatbot
+    const handleTextClick = (clickedText) => {
+        setInput(clickedText);
+    };
 
-        <h1 className="chatbot-header">ChatBot</h1>
-        <table className="chatbot-components">
-          <tr>
-            <th>
-              <div className="shortcut-box">
-                <h2 className="shortcut-header">Shortcuts</h2>
-                <div className="shortcut-list">
-                  <table className="shortcut-button-table">
-                    <tr>
-                      <td>
-                        <button
-                            className="shortcut-button"
-                            onClick={museumLocation}
-                        >
-                          Museum Location
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <button
-                            className="shortcut-button"
-                            onClick={famousExhibits}
-                        >
-                          Famous Exhibits
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <button
-                            className="shortcut-button"
-                            onClick={eventCalender}
-                        >
-                          Event Calender
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <button className="shortcut-button" onClick={museumHours}>
-                          Museum Hours
-                        </button>
-                      </td>
-                    </tr>
-                  </table>
+    //add any other chatbot suggestions to array
+    const suggestions = [
+        "Here are some suggestions you can ask:",
+        "Where is the museum?",
+        "What are some famous exhibits?",
+        "Are there any events approaching?",
+        "What are the hours of operation?",
+        "Other options..."
+    ];
+
+    //initial suggestions display
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            const suggestionsArray = suggestions.map((suggestion) => ({
+                sender: "bot",
+                content: suggestion
+            }));
+            setText((prevState) => [...prevState, ...suggestionsArray]);
+        }, 5000);
+
+        return () => clearTimeout(timeout);
+    }, []);
+
+    return (
+        <div>
+            {toggleOn ? (
+                <div className="chatbot">
+
+                    <div className="chatbot-components">
+                        <div className="chatbot-header">
+                            <h1 className="chatbot-title">ChatBot</h1>
+                            <button onClick={() => setToggle(false)}>Minimize</button>
+                        </div>
+
+                        <div className="text-list">
+                            {text.map((text, index) => (
+                                <Text key={index} text={text} onTextClick={handleTextClick}/>
+                            ))}
+                            <div ref={textListEndRef}></div>
+                        </div>
+
+                        <div className="text-form">
+                            <form
+                                className="form-container"
+                                method="submit"
+                                onSubmit={handleSubmit}
+                                onReset={handleReset}
+                            >
+                                <input
+                                    value={input}
+                                    maxLength="100"
+                                    size="40"
+                                    onChange={(event) => setInput(event.target.value)}
+                                    placeholder="Enter Text..."
+                                />
+                                <button className="chatbot-button" type="submit">
+                                    Submit
+                                </button>
+                                <button className="chatbot-button" type="reset">
+                                    Reset
+                                </button>
+                                <button className="chatbot-button">
+                                    Text-To-speech
+                                </button>
+                                <button className="chatbot-button">
+                                    Speech-To-Text
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </th>
-            <th>
-              <div className="text-list">
-                {text.map((text, index) => (
-                    <Text key={index} text={text} />
-                ))}
-                <div ref={textListEndRef}></div>
-              </div>
-            </th>
-          </tr>
-        </table>
-        <div className="text-form">
-          <form
-              className="form-container"
-              method="submit"
-              onSubmit={handleSubmit}
-              onReset={handleReset}
-          >
-            <input
-                value={input}
-                maxLength="100"
-                size="40"
-                onChange={(event) => setInput(event.target.value)}
-                placeholder="Enter Text..."
-            />
-            <button className="chatbot-button" type="submit">
-              Submit
-            </button>
-            <button className="chatbot-button" type="reset">
-              Reset
-            </button>
-            <button className="chatbot-button" >
-              Text-To-speech
-            </button>
-            <button className="chatbot-button" >
-              Speech-To-Text
-            </button>
-          </form>
+
+            ) : (
+                <div className="chatbot-toggle" onClick={() => setToggle(true)}>
+                    ChatBot
+                </div>
+            )}
         </div>
-      </div>
-  );
+    );
 
-  //Following functions are just used to demonstrate the buttons working/blueprint for when the actual functionality is there
-  function museumLocation() {
-    setInput("Where is the museum?");
-    handleSubmit;
-  }
-
-  function famousExhibits() {
-    setInput("What are some famous exhibits?");
-    handleSubmit;
-  }
-
-  function eventCalender() {
-    setInput("Are there any events approaching?");
-    handleSubmit;
-  }
-
-  function museumHours() {
-    setInput("What are the hours of operation?");
-    handleSubmit;
-  }
 };
 
 export default Chatbot;

@@ -1,10 +1,23 @@
 import "./Home.css";
 import {ImageChangerComponent} from "./Components";
+import Chatbot from "./Chatbot";
 
 const Home = () => {
+
+    //common breakpoints
+    // 320px-480px: Mobile devices
+    // 481px-768px: iPads, Tablets
+    // 769px-1024px: Small screens, laptops
+    // 1025px-1200px: Desktops, large screens
+
+    const isMobile = window.innerWidth <= 768;
+
     return (
 
         <div className="container">
+
+            {isMobile ? <div> Mobile layout </div> : <div>
+            <Chatbot/>
 
             <h1>Niagara On The Lake Museum</h1>
             <div className="center">
@@ -27,6 +40,7 @@ const Home = () => {
                 <div className="text"> Possible museum twitter feed </div>
                 <div className="text"> Location / contact info </div>
             </div>
+        </div> }
         </div>
     )
 };
