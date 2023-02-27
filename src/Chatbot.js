@@ -11,12 +11,12 @@ const model = "text-davinci-003";   // GPT-3 Model version being used
 
 // Message component
 const Text = ({ text, onTextClick }) => {
-    const textFrom = "text-" + (text.sender === "user" ? "user" : "bot");
-    const textFrom1 = (text.sender === "user" ? "user" : "bot") + "-container";
+    const textFrom = "text-" + (text.sender === "Guest" ? "Guest" : "MuseumMate");
+    const textFrom1 = (text.sender === "Guest" ? "Guest" : "MuseumMate") + "-container";
 
     // Limit the clickable suggestions in text list to chatbot only
     const handleClick = () => {
-        if (text.sender === "bot") {
+        if (text.sender === "MuseumMate") {
             onTextClick(text.content);
         }
     };
@@ -25,7 +25,7 @@ const Text = ({ text, onTextClick }) => {
         <div className="text-container">
             <div className={textFrom1}>
                 <div className={textFrom} onClick={handleClick}
-                    style={{ cursor: text.sender === "bot" ? "pointer" : "auto" }}>
+                    style={{ cursor: text.sender === "MuseumMate" ? "pointer" : "auto" }}>
                     <div className="text-sender">{text.sender + ": "}</div>
                     <div className="text-content">{text.content}</div>
                 </div>
@@ -173,6 +173,7 @@ export const Chatbot = () => {
             queryPrefix = answer[1];
             setText([...temp, { content: `${answer[0]}`, sender: "MuseumMate" }]);
         }
+        setInput(""); //remove user text and reset text input field to default
     }
 
     // Fully reset the chatbot text list
@@ -205,7 +206,7 @@ export const Chatbot = () => {
     useEffect(() => {
         const timeout = setTimeout(() => {
             const suggestionsArray = suggestions.map((suggestion) => ({
-                sender: "bot",
+                sender: "MuseumMate",
                 content: suggestion
             }));
             setText((prevState) => [...prevState, ...suggestionsArray]);
@@ -213,6 +214,17 @@ export const Chatbot = () => {
 
         return () => clearTimeout(timeout);
     }, []);
+
+    //accessibility below
+    //text-to-speech
+    const handleTTS = () => {
+        setInput("text-to-speech logic here...")
+    }
+
+    // speech-to-text
+    const handleSTT = () => {
+        setInput("speech-to-text logic here...")
+    }
 
     return (
         <div>
@@ -252,10 +264,10 @@ export const Chatbot = () => {
                                 <button className="chatbot-button" type="reset">
                                     Reset
                                 </button>
-                                <button className="chatbot-button">
+                                <button className="chatbot-button" type="button" onClick={handleTTS}>
                                     Text-To-speech
                                 </button>
-                                <button className="chatbot-button">
+                                <button className="chatbot-button" type="button" onClick={handleSTT}>
                                     Speech-To-Text
                                 </button>
                             </form>
