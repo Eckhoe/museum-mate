@@ -57,6 +57,13 @@
     min-height: min-content;
     width: 75%;
     margin-top: 75px;
+
+    position: fixed;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 .chatbot-components{
@@ -64,36 +71,14 @@
     border: 2px solid white;
     border-radius: 25px;
     background-color: #333;
+    background-color: rgba(0,0,0,0.75);
 }
 
 .chatbot-header {
-    flex: 0 0 auto;
-    padding: 10px;
-    text-align: center;
-    overflow: hidden;
-}
-
-.shortcut-box{
-    padding: 10px;
-    margin: 5px;
-    border: 2px solid white;
-    width: min-content;
-    border-radius: 25px;
-}
-
-.shortcut-header{
-    margin: auto;
-    text-align: center;
-    vertical-align: middle;
-}
-
-.shortcut-list{
     display: flex;
-    padding: 10px;
-    margin-top: 10px;
-    margin-right: 20px;
-    margin-left: 20px;
-    margin-bottom: 5px;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
 }
 
 .return-login{
@@ -116,4 +101,29 @@
 .user-container{
     display: flex;
     justify-content: flex-end;
+}
+
+.chatbot-toggle{
+    bottom: 30px;
+    right: 30px;
+    position: fixed;
+    color: white;
+    padding: 30px;
+    cursor: pointer;
+    border: 2px solid white;
+    border-radius: 25px;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.chatbot-minimize{
+    flex: 0 0 auto;
+    justify-content: right;
+    padding: 10px;
+    text-align: right;
+    overflow: hidden;
+}
+
+.chatbot-title {
+    text-align: center;
+    margin-left: 45%;
 }
