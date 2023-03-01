@@ -9,10 +9,10 @@ import "./ChatBot.css";
 const locations = ["Lobby", "Restroom", "Security Office", "Dinosaur Exhibit", "King Tut Exhibit", "Ancient Greek Exhibit"];
 const exhibits = ["Dinosaur Exhibit", "King Tut Exhibit", "Ancient Greek Exhibit"];
 
-const model = "text-davinci-003";   // GPT-3 Model version being used
-const stop = [" Guest:", " MuseumMate:"];
+const model = "text-davinci-003";
 const restart = "\nGuest: ";
 const start = "\nMuseumMate:";
+const stop = [" Guest:", " MuseumMate:"];
 
 // Message component
 const Text = ({ text, onTextClick }) => {
@@ -42,6 +42,8 @@ const Text = ({ text, onTextClick }) => {
 // Main chatbot component
 export const Chatbot = () => {
     // Local variables
+    let isDirections = false;
+
     // Prefixes for defining the characteristics of each version of the chatbot. These are seen by the chatbot and not the users.
     let queryPrefix = `Response Tone:
     Use a friendly and enthusiastic tone that engages the user.
@@ -104,10 +106,33 @@ export const Chatbot = () => {
     Apply the MuseumMate Directional Format to the following input if it matches a Directional Input, if it does not, just respond normally: 
     `;
 
+    // MuseumMate information
+    const museumMateInfo = `Your response should be concise and no more than 1 or 2 sentences in length. 
+    MuseumMate Description:
+    MuseumMate is a robust chatbot that can provide information on every exhibit, artifact, and archive found in the Niagara on the Lake (NOTL) Museum, as well as give detailed directions for guests to find any exhibit or facility within the museum.
+    Niagara on the Lake Museum Description:
+    The Niagara Historical Society was established in 1895 to foster an appreciation of Niagara-on-the-Lake's rich heritage. Within a year, the Society had a significant collection of artefacts that it decided to open a Museum in the local Courthouse. In 1907, under the leadership of the Society’s President, Janet Carnochan, they opened Memorial Hall, Ontario’s first purpose-built Museum.
+    The NOTL Museum acknowledges that we are operating on lands that have been inhabited by Indigenous people for millennia and would like to honor all the centuries of Indigenous Peoples who have walked on Turtle Island before us. We are grateful for the opportunity to live, work and play here in Niagara-on-the-Lake and we give thanks to the ancestors who have served as stewards of this special place. Today, we have a responsibility to live in balance and harmony with each other and all living things, so that our 7th generation will be able to enjoy these beautiful lands as well!
+    Today, the Niagara Historical Society continues to promote and preserve our local heritage by owning and operating the Niagara-on-the-Lake Museum. The site now consists of three independent buildings that are merged together. The three buildings are: The High School building (1875), Memorial Hall (1907) and the Link Building (1971).
+    The Niagara-on-the-Lake Museum contains one of Ontario's most important local history collections. Located 20km north of Niagara Falls, Niagara-on-the-Lake was an important home and terminus for Indigenous peoples, provided a safe haven for refugees and United Empire Loyalists, was the capital of Upper Canada, was in the middle of a war zone and visited by millions as a place of recreation for over 160 years. These stories play a major role in the development of Canada. The galleries host a permanent exhibition, titled Our Story, chronicling the history of our community. Two temporary exhibitions are mounted each year and over 80 engaging programs are enjoyed by the young and the young at heart.
+    Operating Hours:
+    Monday 1p.m.-5p.m., Tuesday 1p.m. - 5p.m., Wednesday 1p.m. - 5p.m., Thursday 1p.m. - 5p.m., Friday 1p.m. - 5p.m., Saturday 1p.m. - 5p.m., Sunday 1p.m. - 5p.m.
+    The museum is closed on the following holidays: Good Friday, Easter Sunday, Thanksgiving day, and during the Christmas season between December 18th and January 1st.
+    Address:
+    43 Castlereagh St, Niagara-on-the-Lake, ON L0S 1J0, Canada
+    Contact Information:
+    Phone (905) 468-3912
+    Fax (905) 468 1728
+    Email contact@nhsm.ca
+    Popular Busy Times:
+    Between 1p.m. and 3p.m. are the busiest times and Monday and Thursday are the busiest days of the week. The best times to go would be days that are not busy.
+    Facilities:
+    Is wheelchair accessable and has ramps and an elevator.
+    `;
+
     // Default input prompts for starting the conversation.
     const queryPrompt = "Hi! I am MuseumMate and I can provide information on all the exhibits around you! What would you like to know?";
     const directionPrompt = "Hi! I am MuseumMate and I can provide directions on how to get anywhere in the museum. Could you tell me where you are now and where you would like to go?";
-    let isDirections = false;  // Check for directions chat over query chat
 
     // TO DO: Query database for information on topics, these are testing variables. I know, this is very messy.
     const exhibitInformation = [
@@ -181,26 +206,27 @@ export const Chatbot = () => {
             const temp = [...text, { content: input, sender: "Guest" }];
             queryPrefix = queryPrefix + input;
 
-            // Use GPT-3 to extract the exhibit name, then supply that exhibit information
-            // If there is not exhibit (E.g., input is "Hi") then supply nothing
+            // Use GPT-3 to extract the exhibit name
             let curExhibit = await GenerateBasic(model, "What is the subject in the following text: " + input);
             curExhibit = await ConfirmLocation(exhibits, curExhibit);
             curExhibit = RemoveLines(curExhibit);
-            let information = "";
-            exhibitInformation.forEach(index => {
-                if (curExhibit == index[0]) {
-                    information = index[1];
-                }
-            })
 
-            // Generate an output, if no exhibit exists just generate basic chat
-            let answer = "";
-            if (curExhibit == "n/a") {
-                answer = await GenerateChat(model, queryPrefix, start, restart, stop);
+            // Supply information to for the chatbot, use exhibit information or MuseumMate information if
+            // no exhibit is specified
+            let information = "";
+            if(curExhibit == "n/a"){
+                information = museumMateInfo;
             }
-            else {
-                answer = await GenerateChatWithInfo(model, queryPrefix, information, start, restart, stop);
+            else{
+                exhibitInformation.forEach(index => {
+                    if (curExhibit == index[0]) {
+                        information = index[1];
+                    }
+                })
             }
+
+            // Generate an output
+            let answer = await GenerateChatWithInfo(model, queryPrefix, information, start, restart, stop + ".");
             queryPrefix = answer[1];
             setText([...temp, { content: `${answer[0]}`, sender: "MuseumMate" }]);
         }

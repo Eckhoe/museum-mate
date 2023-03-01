@@ -6,7 +6,8 @@
 .text-Guest {
     text-align: right;
     border-radius: 25px;
-    background: #0688f3;
+    background: white;
+    color:black;
     padding: 15px;
     margin: 10px;
     position: relative;
