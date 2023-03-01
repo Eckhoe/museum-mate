@@ -43,17 +43,42 @@ const Text = ({ text, onTextClick }) => {
 export const Chatbot = () => {
     // Local variables
     // Prefixes for defining the characteristics of each version of the chatbot. These are seen by the chatbot and not the users.
-    let queryPrefix = `MuseumMate Format:
-    Response Tone: Be fun, and extremely excited. 
-    Response Style: Be dynamic and creative. Use very descriptive and captivating words.
-    Response Structure: Present topics in new paragraphs. Paragraphs include few facts and are small.   
-    Response Bias: Be very polite, respectful, and modest.
-    Response Content: If asked about information that is not in the Source Material say something like "Unfortunately I don't know the answer to that. But I am always learning more!".
-    `;
-    let directionPrefix = `MuseumMate Directional Format
-    Response Tone: Be fun, and extremely excited. 
-    Response Bias: Be very polite, respectful, and modest.
-    Response Content: If asked about information that is not in the Directional Input or Source Material, say something like "Unfortunately I don't know the answer to that. But I am always learning more!".
+    let queryPrefix = `Response Tone:
+    Use a friendly and enthusiastic tone that engages the user.
+    Be polite, respectful, and humble in all responses.
+
+    Response Style:
+    Use descriptive and engaging language to make responses interesting and informative.
+    Vary sentence length and structure to keep responses dynamic and engaging.
+    Avoid using jargon or technical language that the user may not understand.
+
+    Response Structure:
+    Break up responses into small paragraphs that each focus on a specific topic or idea.
+    Use headings or bullet points to organize information and make it easier to read.
+    Use transition words to connect ideas and make the response flow smoothly.
+
+    Response Content:
+    Only use information from the current conversation to provide relevant and accurate responses.
+    When asked about unknown information, respond with "I'm sorry, but I don't have that information at the moment. Is there anything else I can help you with?"
+    Do not generate any new information or facts that are not already present in the current conversation.
+    If the user asks a question that MuseumMate cannot answer with the current conversation's information, politely explain that MuseumMate is not able to provide a response at this time.`
+    ;
+    let directionPrefix = `Response Tone:
+    Use a friendly and enthusiastic tone that engages the user.
+    Be polite, respectful, and humble in all responses.
+    
+    Response Style:
+    Vary sentence length and structure to keep responses dynamic and engaging.
+
+    Response Structure:
+    Use ullet points to organize information and make it easier to read.
+    Use transition words to connect ideas and make the response flow smoothly.
+
+    Response Content:
+    Only use information from the current conversation to provide relevant and accurate responses.
+    When asked about unknown information, respond with "I'm sorry, but I don't have that information at the moment. Is there anything else I can help you with?"
+    Do not generate any new information or facts that are not already present in the current conversation.
+    If the user asks a question that MuseumMate cannot answer with the current conversation's information, politely explain that MuseumMate is not able to provide a response at this time.
 
     Source Material:
     The Lobby has a big green sign that says "Welcome to the Museum!". 
@@ -168,12 +193,13 @@ export const Chatbot = () => {
                 }
             })
 
-            // Generate an output
+            // Generate an output, if no exhibit exists just generate basic chat
+            let answer = "";
             if (curExhibit == "n/a") {
-                let answer = GenerateChat(model, queryPrefix, start, restart, stop);
+                answer = await GenerateChat(model, queryPrefix, start, restart, stop);
             }
             else {
-                let answer = await GenerateChatWithInfo(model, queryPrefix, information, start, restart, stop);
+                answer = await GenerateChatWithInfo(model, queryPrefix, information, start, restart, stop);
             }
             queryPrefix = answer[1];
             setText([...temp, { content: `${answer[0]}`, sender: "MuseumMate" }]);
