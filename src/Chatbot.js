@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { GenerateBasic, GenerateChat } from "./GPT-3";
+import { GenerateBasic, GenerateChat, GenerateChatWithInfo } from "./GPT-3";
 import "./App.css";
 import "./ChatBot.css";
 
@@ -7,7 +7,12 @@ import "./ChatBot.css";
 // Global variables
 // TO DO: Change these variables to the final exhibits being used. Also update directionPrefix.
 const locations = ["Lobby", "Restroom", "Security Office", "Dinosaur Exhibit", "King Tut Exhibit", "Ancient Greek Exhibit"];
+const exhibits = ["Dinosaur Exhibit", "King Tut Exhibit", "Ancient Greek Exhibit"];
+
 const model = "text-davinci-003";   // GPT-3 Model version being used
+const stop = [" Guest:", " MuseumMate:"];
+const restart = "\nGuest: ";
+const start = "\nMuseumMate:";
 
 // Message component
 const Text = ({ text, onTextClick }) => {
@@ -38,44 +43,42 @@ const Text = ({ text, onTextClick }) => {
 export const Chatbot = () => {
     // Local variables
     // Prefixes for defining the characteristics of each version of the chatbot. These are seen by the chatbot and not the users.
-    let queryPrefix = `MuseumMate Format\\
-  Response Tone: Fun, very excited, and informative. 
-  Response Style: Dynamic and creative when giving information. Uses easy to understand and very descriptive words.
-  Response Structure: Presents Source Material topics in new paragraphs. Paragraphs include few facts and are small in length.
-  Bias: Chooses very polite, respectful, and modest language.
-  "Important": Can only present material found in the Source Material, must say something like "Unfortunately I don't know the answer to that. But I am always learning more!" when asked about unknown information.
-  \\
-  `;
-    let directionPrefix = `MuseumMate Directional Format\\
-  Response Tone: Fun and very clear.
-  Response Style: Dynamic and uses easy to understand words.
-  Response Structure: Presents each direction on a new numbered line.
-  Bias: Chooses very polite, respectful, and modest language.
-  "Important": Can only present material found in the Directions Input or Source Material.
+    let queryPrefix = `MuseumMate Format:
+    Response Tone: Be fun, and extremely excited. 
+    Response Style: Be dynamic and creative. Use very descriptive and captivating words.
+    Response Structure: Present topics in new paragraphs. Paragraphs include few facts and are small.   
+    Response Bias: Be very polite, respectful, and modest.
+    Response Content: If asked about information that is not in the Source Material say something like "Unfortunately I don't know the answer to that. But I am always learning more!".
+    `;
+    let directionPrefix = `MuseumMate Directional Format
+    Response Tone: Be fun, and extremely excited. 
+    Response Bias: Be very polite, respectful, and modest.
+    Response Content: If asked about information that is not in the Directional Input or Source Material, say something like "Unfortunately I don't know the answer to that. But I am always learning more!".
 
-  Source Material:
-  The Lobby has a big green sign that says "Welcome to the Museum!". 
-  The Dinosaur Exhibit has a large T-Rex on display. 
-  The King Tut Exhibit has the sound of blowing sand playing when you enter. 
-  The Ancient Greek Exhibit has a large marble statue in from of the door. 
-  The Security office has a red sign with a white plus symbol for medical aid. 
-  The Restrooms have a green arrow pointing to them with a restroom symbol. 
+    Source Material:
+    The Lobby has a big green sign that says "Welcome to the Museum!". 
+    The Dinosaur Exhibit has a large T-Rex on display. 
+    The King Tut Exhibit has the sound of blowing sand playing when you enter. 
+    The Ancient Greek Exhibit has a large marble statue in from of the door. 
+    The Security office has a red sign with a white plus symbol for medical aid. 
+    The Restrooms have a green arrow pointing to them with a restroom symbol. 
 
-  Examples:
-  Directional Input "right(Dinosaur Exhibit), left, straight, right(Restroom) 
-  I would be more than happy to get you there! Just follow these directions:
-  1. Head right into the Dinosaur Exhibit, you will see a huge T-Rex on display.
-  2. Now make a left-hand turn and continue straight.
-  3. Finally, turn right and you will see a green arrow with a restroom symbol pointing where to go."
+    Examples:
+    Directional Input "right(Dinosaur Exhibit), left, straight, right(Restroom) 
+    I would be more than happy to get you there! Just follow these directions:
+    1. Head right into the Dinosaur Exhibit, you will see a huge T-Rex on display.
+    2. Now make a left-hand turn and continue straight.
+    3. Finally, turn right and you will see a green arrow with a restroom symbol pointing where to go."
 
-  Directional Input "straight(Lobby), right, straight(King Tut Exhibit)
-  I love that exhibit! If you follow these directions you will be there ASAP:
-  1. Head straight into the Lobby where you'll notice a big green sign that says "Welcome to the Museum!".
-  2. Now turn right turn.
-  3. Continue straight and you will end up in the King Tut Exhibit. You will know you are there when you hear the sound of blowing sand!"
-  \\
-  Apply the MuseumMate Directional Format to the following input if it matches a Directional Input, if it does not, just respond normally: 
-  `;
+    Directional Input "straight(Lobby), right, straight(King Tut Exhibit)
+    I love that exhibit! If you follow these directions you will be there ASAP:
+    1. Head straight into the Lobby where you'll notice a big green sign that says "Welcome to the Museum!".
+    2. Now turn right turn.
+    3. Continue straight and you will end up in the King Tut Exhibit. You will know you are there when you hear the sound of blowing sand!"
+
+    Apply the MuseumMate Directional Format to the following input if it matches a Directional Input, if it does not, just respond normally: 
+    `;
+
     // Default input prompts for starting the conversation.
     const queryPrompt = "Hi! I am MuseumMate and I can provide information on all the exhibits around you! What would you like to know?";
     const directionPrompt = "Hi! I am MuseumMate and I can provide directions on how to get anywhere in the museum. Could you tell me where you are now and where you would like to go?";
@@ -120,7 +123,7 @@ export const Chatbot = () => {
         if (isDirections) {
             // Recieve the user input and add to prompt
             const temp = [...text, { content: input, sender: "Guest" }];
-            directionPrefix == directionPrefix + "Guest: " + input;
+            directionPrefix = directionPrefix + input;
 
             // Use GPT-3 to find the starting and ending locations within the user input, confirm them (i.e., spelling issues), and 
             // remove blank lines (an issue with GPT-3)
@@ -151,25 +154,27 @@ export const Chatbot = () => {
         else {
             // Recieve the user input
             const temp = [...text, { content: input, sender: "Guest" }];
-            queryPrefix == queryPrefix + "Guest: " + input;
+            queryPrefix = queryPrefix + input;
 
             // Use GPT-3 to extract the exhibit name, then supply that exhibit information
             // If there is not exhibit (E.g., input is "Hi") then supply nothing
-            let exhibit = await GenerateBasic(model, "What is the subject in the following text: " + input);
-            exhibit = await ConfirmLocation(locations, exhibit);
-            exhibit = RemoveLines(exhibit);
+            let curExhibit = await GenerateBasic(model, "What is the subject in the following text: " + input);
+            curExhibit = await ConfirmLocation(exhibits, curExhibit);
+            curExhibit = RemoveLines(curExhibit);
             let information = "";
             exhibitInformation.forEach(index => {
-                if (exhibit == index[0]) {
+                if (curExhibit == index[0]) {
                     information = index[1];
                 }
             })
 
             // Generate an output
-            const stop = [" Guest:", " MuseumMate:"];
-            const restart = "\nGuest: ";
-            const start = "\nMuseumMate:";
-            let answer = await GenerateChat(model, queryPrefix + "\n", information, start, restart, stop);
+            if (curExhibit == "n/a") {
+                let answer = GenerateChat(model, queryPrefix, start, restart, stop);
+            }
+            else {
+                let answer = await GenerateChatWithInfo(model, queryPrefix, information, start, restart, stop);
+            }
             queryPrefix = answer[1];
             setText([...temp, { content: `${answer[0]}`, sender: "MuseumMate" }]);
         }
@@ -287,7 +292,8 @@ export const Chatbot = () => {
 
 // This method uses GPT-3 to confirm a natural language input as a set location. Ex. "ancent grek" -> "Ancient Greek Exhibit"
 export const ConfirmLocation = async (locations, inputText) => {
-    const prompt = "Locations: " + locations.join(', ') + "\nReturn just the location from Locations that matches closest to the following input: " + inputText;
+    const prompt = "Locations: " + locations.join(', ') + "\nReturn just the name from Locations that closest matches the following input: " +
+        inputText + "\nIf no Location matches the input return n/a";
     const temp = await GenerateBasic(model, prompt);
     return temp;
 }
