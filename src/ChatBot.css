@@ -3,6 +3,10 @@
     flex: auto;
 }
 
+.form-input {
+    min-width: 60%;
+}
+
 .text-Guest {
     text-align: right;
     border-radius: 25px;
@@ -114,6 +118,14 @@
     border: 2px solid white;
     border-radius: 25px;
     background-color: rgba(0,0,0,0.5);
+    font-weight: bold;
+}
+
+.chatbot-toggle:hover{
+    background-color: white;
+    color: black;
+    font-weight: bold;
+    border: 2px solid black;
 }
 
 .chatbot-minimize{

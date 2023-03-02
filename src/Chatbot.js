@@ -3,6 +3,7 @@ import { GenerateBasic, GenerateChat } from "./GPT-3";
 import { _queryPrefix, _directionPrefix, _museumInfo, _conTypeExamples, _exhibitInfo, _locIdentExamples, _musIdentExamples } from "./InputData";
 import "./App.css";
 import "./ChatBot.css";
+import {Loading} from "./Components";
 
 /* This class implements the MuseumMate chatbot using calls to GPT-3 for text generation and React JS for I/O */
 // Global variables
@@ -31,7 +32,7 @@ const Text = ({ text, onTextClick }) => {
         <div className="text-container">
             <div className={textFrom1}>
                 <div className={textFrom} onClick={handleClick}
-                    style={{ cursor: text.sender === "MuseumMate" ? "pointer" : "auto" }}>
+                     style={{ cursor: text.sender === "MuseumMate" ? "pointer" : "auto" }}>
                     <div className="text-sender">{text.sender + ": "}</div>
                     <div className="text-content">{text.content}</div>
                 </div>
@@ -71,7 +72,10 @@ export const Chatbot = () => {
         if (textListEndRef.current) {
             textListEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
-    }, [text]);
+    }, );
+
+    //loading
+    const [isLoading,setLoading] = useState(false);
 
     // On enter add input to text list for display, get chatbot response and add to list as well
     const handleSubmit = async (event) => {
@@ -84,6 +88,7 @@ export const Chatbot = () => {
         const temp = [...text, { content: input, sender: "Guest" }];
         let conType = await GenerateBasic(model, "Indicate if input is asking for directions.\n" + conTypeExamples + "Input: " + input + "\nOutput:");
         isDirections = conType.includes("Yes") ? true : false;
+        setLoading(true); //loading animation starts
 
         // Determine the conversation we are having (Possibly make dynamic in the future)
         if (isDirections) {
@@ -150,6 +155,7 @@ export const Chatbot = () => {
             // Generate an output
             const answer = await GenerateChat(model, queryPrefix, information, start, restart, stop + ".");
             queryPrefix = answer[1];
+            setLoading(false)  //loading animation ends
             setText([...temp, { content: `${answer[0]}`, sender: "MuseumMate" }]);
         }
         setInput(""); // Remove user text and reset text input field to default
@@ -160,7 +166,6 @@ export const Chatbot = () => {
         setText([]);
         setText([{ content: startPrompt, sender: "MuseumMate" }])
     }
-
 
     // Chatbot popup toggle
     const [toggleOn, setToggle] = useState(false);
@@ -196,13 +201,33 @@ export const Chatbot = () => {
     //accessibility below
     //text-to-speech
     const handleTTS = () => {
-        setInput("text-to-speech logic here...")
+        setInput((getSpeech) => [...getSpeech, ...talk]);
     }
 
     // speech-to-text
     const handleSTT = () => {
-        setInput("speech-to-text logic here...")
+        setInput((Listen) => [...Listen, ...Stop, ...End, ...onFinal, ...onInterimResult, ...onStop]);
     }
+
+    //sets chatbot popup default to active if on chatbot page
+    useEffect(() => {
+        const currentUrl = window.location.href;
+        //console.log(currentUrl);
+        if (currentUrl === "http://localhost:3000/chatbot") {
+            setToggle(true);
+        }
+    }, []);
+
+    //sets a loading animation while waiting for chabot response
+    const Loader = () => {
+        if (isLoading) {
+            return (
+                <div>
+                    <Loading/>
+                </div>
+            )
+        }
+    };
 
     return (
         <div>
@@ -219,6 +244,7 @@ export const Chatbot = () => {
                             {text.map((text, index) => (
                                 <Text key={index} text={text} onTextClick={handleTextClick} />
                             ))}
+                            <Loader/>
                             <div ref={textListEndRef}></div>
                         </div>
 
@@ -229,10 +255,10 @@ export const Chatbot = () => {
                                 onSubmit={handleSubmit}
                                 onReset={handleReset}
                             >
-                                <input
+                                <input className="form-input"
                                     value={input}
                                     maxLength="100"
-                                    size="40"
+                                    //size="100"
                                     onChange={(event) => setInput(event.target.value)}
                                     placeholder="Enter Text..."
                                 />

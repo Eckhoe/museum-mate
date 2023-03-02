@@ -1,4 +1,4 @@
-import {BrowserRouter, Link, Outlet, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Link, Outlet, Route, Router, Routes} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 
 import "./Components.css"
@@ -13,7 +13,7 @@ const NavigationBar = () => {
         <>
             <div className="navbar">
                 <Link to="/" className="nav-option">Home</Link>
-                <div className="nav-option">Museum/Info?</div>
+
                 <Link to="/directions" className="nav-option">Directions</Link>
                 <Link to="/chatbot" className="nav-option">Chat-Bot</Link>
                 <Link to="/Login" className="nav-option">About/Admin</Link>
@@ -46,26 +46,52 @@ const ImageChangerComponent = () => {
 const PageRouter = () => {
 
     const isMobile = window.innerWidth <= 768;
+    const [isOpen, setIsOpen] = useState(false);
+
+    const handleToggle = () => {
+        setIsOpen(!isOpen);
+    };
 
     return (
-
-
-        <BrowserRouter>
-            {isMobile ?
-                <div>mobile layout </div>
-                :
-                <Routes>
-                    <Route path="/" element={<NavigationBar/>}>
-                        <Route index element={<Home/>}/>
-                        <Route path="directions" element={<Directions/>}/>
-                        <Route path="chatbot" element={<Chatbot/>}/>
-                        <Route path="login" element={<Login/>}/>
-                    </Route>
-                </Routes>
-            }
-        </BrowserRouter>
-
-
+        <>
+            {isMobile ? <>
+                <BrowserRouter>
+                    <div className="navbar-mobile">
+                        <div className="navbar-left">
+                            <h1>Museum Mate</h1>
+                        </div>
+                        <div className="navbar-right">
+                            <button className="menu-toggle" onClick={handleToggle}>
+                                <span className="menu-toggle-icon">{isOpen ? "X" : "☰"}</span>
+                            </button>
+                        </div>
+                        <div className={`drawer ${isOpen ? 'open' : ''}`}>
+                            <Link to="/" onClick={handleToggle}>Home</Link>
+                            <Link to="/directions" onClick={handleToggle}>Directions</Link>
+                            <Link to="/chatbot" onClick={handleToggle}>Chatbot</Link>
+                            <Link to="/login" onClick={handleToggle}>Login</Link>
+                        </div>
+                    </div>
+                    <Routes>
+                        <Route path="/" element={<Home/>}/>
+                        <Route path="/directions" element={<Directions/>}/>
+                        <Route path="/chatbot" element={<Chatbot/>}/>
+                        <Route path="/login" element={<Login/>}/>
+                    </Routes>
+                </BrowserRouter>
+            </> : <>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path="/" element={<NavigationBar/>}>
+                            <Route index element={<Home/>}/>
+                            <Route path="directions" element={<Directions/>}/>
+                            <Route path="chatbot" element={<Chatbot/>}/>
+                            <Route path="login" element={<Login/>}/>
+                        </Route>
+                    </Routes>
+                </BrowserRouter>
+            </>}
+        </>
     );
 };
 
@@ -78,4 +104,15 @@ const Footer = () => {
     );
 };
 
-export {NavigationBar, ImageChangerComponent, PageRouter, Footer};
+//chatbot reply message loading component
+const Loading = () => {
+    return (
+        <div className="loading">
+            <div className="loading-circle"></div>
+            <div className="loading-circle loading-circle2"></div>
+            <div className="loading-circle loading-circle3"></div>
+        </div>
+    );
+};
+
+export {NavigationBar, ImageChangerComponent, PageRouter, Footer, Loading};
