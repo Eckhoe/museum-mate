@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { GenerateBasic, GenerateChat, GenerateChatWithInfo } from "./GPT-3";
+import { GenerateBasic, GenerateChat } from "./GPT-3";
+import { _queryPrefix, _directionPrefix, _museumInfo, _conTypeExamples, _exhibitInfo, _locIdentExamples, _musIdentExamples } from "./InputData";
 import "./App.css";
 import "./ChatBot.css";
 
@@ -8,7 +9,7 @@ import "./ChatBot.css";
 // TO DO: Change these variables to the final exhibits being used. Also update directionPrefix.
 const locations = ["Lobby", "Restroom", "Security Office", "Dinosaur Exhibit", "King Tut Exhibit", "Ancient Greek Exhibit"];
 const exhibits = ["Dinosaur Exhibit", "King Tut Exhibit", "Ancient Greek Exhibit"];
-
+const museumTopics = ["MuseumMate", "Niagara on the Lake (NOTL) Museum", "Operating Hours", "Address", "Contact", "Facilities"];
 const model = "text-davinci-003";
 const restart = "\nGuest: ";
 const start = "\nMuseumMate:";
@@ -43,116 +44,26 @@ const Text = ({ text, onTextClick }) => {
 export const Chatbot = () => {
     // Local variables
     let isDirections = false;
-
-    // Prefixes for defining the characteristics of each version of the chatbot. These are seen by the chatbot and not the users.
-    let queryPrefix = `Response Tone:
-    Use a friendly and enthusiastic tone that engages the user.
-    Be polite, respectful, and humble in all responses.
-
-    Response Style:
-    Use descriptive and engaging language to make responses interesting and informative.
-    Vary sentence length and structure to keep responses dynamic and engaging.
-    Avoid using jargon or technical language that the user may not understand.
-
-    Response Structure:
-    Break up responses into small paragraphs that each focus on a specific topic or idea.
-    Use headings or bullet points to organize information and make it easier to read.
-    Use transition words to connect ideas and make the response flow smoothly.
-
-    Response Content:
-    Only use information from the current conversation to provide relevant and accurate responses.
-    When asked about unknown information, respond with "I'm sorry, but I don't have that information at the moment. Is there anything else I can help you with?"
-    Do not generate any new information or facts that are not already present in the current conversation.
-    If the user asks a question that MuseumMate cannot answer with the current conversation's information, politely explain that MuseumMate is not able to provide a response at this time.`
-    ;
-    let directionPrefix = `Response Tone:
-    Use a friendly and enthusiastic tone that engages the user.
-    Be polite, respectful, and humble in all responses.
+    let directionPrefix = _directionPrefix;
+    let queryPrefix = _queryPrefix;
+    const museumInfo = _museumInfo;
+    const conTypeExamples = _conTypeExamples;
+    const exhibitInfo = _exhibitInfo;
+    const locIdentExamples = _locIdentExamples;
+    const musIdentExamples = _musIdentExamples;
     
-    Response Style:
-    Vary sentence length and structure to keep responses dynamic and engaging.
+    // TO DO: Query database for information on topics. DON'T FORGET TO UPDATE InputData.JS.
 
-    Response Structure:
-    Use ullet points to organize information and make it easier to read.
-    Use transition words to connect ideas and make the response flow smoothly.
-
-    Response Content:
-    Only use information from the current conversation to provide relevant and accurate responses.
-    When asked about unknown information, respond with "I'm sorry, but I don't have that information at the moment. Is there anything else I can help you with?"
-    Do not generate any new information or facts that are not already present in the current conversation.
-    If the user asks a question that MuseumMate cannot answer with the current conversation's information, politely explain that MuseumMate is not able to provide a response at this time.
-
-    Source Material:
-    The Lobby has a big green sign that says "Welcome to the Museum!". 
-    The Dinosaur Exhibit has a large T-Rex on display. 
-    The King Tut Exhibit has the sound of blowing sand playing when you enter. 
-    The Ancient Greek Exhibit has a large marble statue in from of the door. 
-    The Security office has a red sign with a white plus symbol for medical aid. 
-    The Restrooms have a green arrow pointing to them with a restroom symbol. 
-
-    Examples:
-    Directional Input "right(Dinosaur Exhibit), left, straight, right(Restroom) 
-    I would be more than happy to get you there! Just follow these directions:
-    1. Head right into the Dinosaur Exhibit, you will see a huge T-Rex on display.
-    2. Now make a left-hand turn and continue straight.
-    3. Finally, turn right and you will see a green arrow with a restroom symbol pointing where to go."
-
-    Directional Input "straight(Lobby), right, straight(King Tut Exhibit)
-    I love that exhibit! If you follow these directions you will be there ASAP:
-    1. Head straight into the Lobby where you'll notice a big green sign that says "Welcome to the Museum!".
-    2. Now turn right turn.
-    3. Continue straight and you will end up in the King Tut Exhibit. You will know you are there when you hear the sound of blowing sand!"
-
-    Apply the MuseumMate Directional Format to the following input if it matches a Directional Input, if it does not, just respond normally: 
-    `;
-
-    // MuseumMate information
-    const museumMateInfo = `Your response should be concise and no more than 1 or 2 sentences in length. 
-    MuseumMate Description:
-    MuseumMate is a robust chatbot that can provide information on every exhibit, artifact, and archive found in the Niagara on the Lake (NOTL) Museum, as well as give detailed directions for guests to find any exhibit or facility within the museum.
-    Niagara on the Lake Museum Description:
-    The Niagara Historical Society was established in 1895 to foster an appreciation of Niagara-on-the-Lake's rich heritage. Within a year, the Society had a significant collection of artefacts that it decided to open a Museum in the local Courthouse. In 1907, under the leadership of the Society’s President, Janet Carnochan, they opened Memorial Hall, Ontario’s first purpose-built Museum.
-    The NOTL Museum acknowledges that we are operating on lands that have been inhabited by Indigenous people for millennia and would like to honor all the centuries of Indigenous Peoples who have walked on Turtle Island before us. We are grateful for the opportunity to live, work and play here in Niagara-on-the-Lake and we give thanks to the ancestors who have served as stewards of this special place. Today, we have a responsibility to live in balance and harmony with each other and all living things, so that our 7th generation will be able to enjoy these beautiful lands as well!
-    Today, the Niagara Historical Society continues to promote and preserve our local heritage by owning and operating the Niagara-on-the-Lake Museum. The site now consists of three independent buildings that are merged together. The three buildings are: The High School building (1875), Memorial Hall (1907) and the Link Building (1971).
-    The Niagara-on-the-Lake Museum contains one of Ontario's most important local history collections. Located 20km north of Niagara Falls, Niagara-on-the-Lake was an important home and terminus for Indigenous peoples, provided a safe haven for refugees and United Empire Loyalists, was the capital of Upper Canada, was in the middle of a war zone and visited by millions as a place of recreation for over 160 years. These stories play a major role in the development of Canada. The galleries host a permanent exhibition, titled Our Story, chronicling the history of our community. Two temporary exhibitions are mounted each year and over 80 engaging programs are enjoyed by the young and the young at heart.
-    Operating Hours:
-    Monday 1p.m.-5p.m., Tuesday 1p.m. - 5p.m., Wednesday 1p.m. - 5p.m., Thursday 1p.m. - 5p.m., Friday 1p.m. - 5p.m., Saturday 1p.m. - 5p.m., Sunday 1p.m. - 5p.m.
-    The museum is closed on the following holidays: Good Friday, Easter Sunday, Thanksgiving day, and during the Christmas season between December 18th and January 1st.
-    Address:
-    43 Castlereagh St, Niagara-on-the-Lake, ON L0S 1J0, Canada
-    Contact Information:
-    Phone (905) 468-3912
-    Fax (905) 468 1728
-    Email contact@nhsm.ca
-    Popular Busy Times:
-    Between 1p.m. and 3p.m. are the busiest times and Monday and Thursday are the busiest days of the week. The best times to go would be days that are not busy.
-    Facilities:
-    Is wheelchair accessable and has ramps and an elevator.
-    `;
-
-    // Default input prompts for starting the conversation.
-    const queryPrompt = "Hi! I am MuseumMate and I can provide information on all the exhibits around you! What would you like to know?";
-    const directionPrompt = "Hi! I am MuseumMate and I can provide directions on how to get anywhere in the museum. Could you tell me where you are now and where you would like to go?";
-
-    // TO DO: Query database for information on topics, these are testing variables. I know, this is very messy.
-    const exhibitInformation = [
-        ["Dinosaur Exhibit", `Dinosaurs are a diverse group of reptiles of the clade Dinosauria. They first appeared during the Triassic period, between 245 and 233.23 million years ago (mya), although the exact origin and timing of the evolution of dinosaurs is the subject of active research. They became the dominant terrestrial vertebrates after the Triassic-Jurassic extinction event 201.3 mya; their dominance continued throughout the Jurassic and Cretaceous periods. The fossil record shows that birds are feathered dinosaurs, having evolved from earlier theropods during the Late Jurassic epoch, and are the only dinosaur lineage known to have survived the Cretaceous-Paleogene extinction event approximately 66 mya. Dinosaurs can therefore be divided into avian dinosaurs—birds—and the extinct non-avian dinosaurs, which are all dinosaurs other than birds.
-    Dinosaurs are varied from taxonomic, morphological and ecological standpoints. Birds, at over 10,700 living species, are among the most diverse groups of vertebrates. Using fossil evidence, paleontologists have identified over 900 distinct genera and more than 1,000 different species of non-avian dinosaurs. Dinosaurs are represented on every continent by both extant species (birds) and fossil remains. Through the first half of the 20th century, before birds were recognized as dinosaurs, most of the scientific community believed dinosaurs to have been sluggish and cold-blooded. Most research conducted since the 1970s, however, has indicated that dinosaurs were active animals with elevated metabolisms and numerous adaptations for social interaction. Some were herbivorous, others carnivorous. Evidence suggests that all dinosaurs were egg-laying, and that nest-building was a trait shared by many dinosaurs, both avian and non-avian.`],
-        ["King Tut Exhibit", `Tutankhamun (or Tutankhamen; c.1341 BC - c.1323 BC) was the antepenultimate pharaoh of the Eighteenth Dynasty of ancient Egypt. He ascended to the throne around the age of nine and reigned until his death around the age of nineteen. Historically, Tutankhamun is primarily known for restoring the traditional polytheistic ancient Egyptian religion, after its suppression by Akhenaten in favor of the Atenist religion. Also, Tutankhamun was one of few kings worshipped as a deity during his lifetime; this was usually done posthumously for most pharaohs. In popular culture, he is known for his vastly opulent wealth found during the 1922 discovery of his tomb, KV62, the only such tomb to date to have been found in near-intact condition. The discovery of his tomb is widely considered one of the greatest archaeological discoveries of all time. 
-    His parentage is debated, as they are not attested in surviving inscriptions. DNA testing has identified his father as the mummy within tomb KV55, thought to be the pharaoh Akhenaten. His mother was identified as a mummy from tomb KV35, which was also his aunt, informally referred to as "The Younger Lady" but is otherwise unknown.
-    Tutankhamun took the throne under the unprecedented viziership of his eventual successor, Ay, to whom he may have been related. Within tomb KV21, the mummy KV21A was identified as having been the biological mother of Tutankhamun's two daughters — it is therefore speculated that this mummy is of his only known wife, Ankhesenamun, who was his paternal half-sister. Their two daughters were identified as the 317a and 317b mummies; daughter 317a was born prematurely at 5-6 months of pregnancy while daughter 317b was born at full-term, though both died in infancy. His names — Tutankhaten and Tutankhamun — are thought to have meant "living image of Aten" and "living image of Amun" in the ancient Egyptian language, with the god Aten having been replaced by the god Amun after Akhenaten's death. Some Egyptologists, including Battiscombe Gunn, have claimed that the translation may be incorrect, instead being closer to "the-life-of-Aten-is-pleasing" or "one-perfect-of-life-is-Aten" (the latter translation by Gerhard Fecht).`],
-        ["Ancient Greek Exhibit", `Ancient Greece (Greek: Ἑλλάς, romanized: Hellás) was a northeastern Mediterranean civilization, existing from the Greek Dark Ages of the 12th-9th centuries BC to the end of classical antiquity (c.600 AD), that comprised a loose collection of culturally and linguistically related city-states and other territories. Most of these regions were officially unified only once, for 13 years, under Alexander the Great's empire from 336 to 323 BC (though this excludes a number of Greek city-states free from Alexander's jurisdiction in the western Mediterranean, around the Black Sea, Cyprus, and Cyrenaica). In Western history, the era of classical antiquity was immediately followed by the Early Middle Ages and the Byzantine period.
-    Roughly three centuries after the Late Bronze Age collapse of Mycenaean Greece, Greek urban poleis began to form in the 8th century BC, ushering in the Archaic period and the colonization of the Mediterranean Basin. This was followed by the age of Classical Greece, from the Greco-Persian Wars to the 5th to 4th centuries BC, and which included the Golden Age of Athens. The conquests of Alexander the Great of Macedon spread Hellenistic civilization from the western Mediterranean to Central Asia. The Hellenistic period ended with the conquest of the eastern Mediterranean world by the Roman Republic, and the annexation of the Roman province of Macedonia in Roman Greece, and later the province of Achaea during the Roman Empire.`]
-    ];
+    // Default input prompt for starting the conversation.
+    const startPrompt = "Hi! I am MuseumMate and I can provide information on all the exhibits around you as well as directions to anywhere in the museum! What can I help you with?";
 
     // Set the intitial output to match the type of conversation that is happening
     const [input, setInput] = useState("");
-    let intro = isDirections ? directionPrompt : queryPrompt;
-    directionPrefix = directionPrefix + "MuseumMate: " + directionPrompt + "\nGuest: ";
-    queryPrefix = queryPrefix + "MuseumMate: " + queryPrompt + "\nGuest: ";
+    directionPrefix = directionPrefix + "MuseumMate: " + startPrompt + "\nGuest: ";
+    queryPrefix = queryPrefix + "MuseumMate: " + startPrompt + "\nGuest: ";
 
     // Output the intro
-    const [text, setText] = useState([{ content: intro, sender: "MuseumMate" }]);
+    const [text, setText] = useState([{ content: startPrompt, sender: "MuseumMate" }]);
     const textListEndRef = useRef(null);
 
     // Keep text list scrolled to the latest message
@@ -169,75 +80,85 @@ export const Chatbot = () => {
             return;
         }
 
+        // Get user input and check the conversation type
+        const temp = [...text, { content: input, sender: "Guest" }];
+        let conType = await GenerateBasic(model, "Indicate if input is asking for directions.\n" + conTypeExamples + "Input: " + input + "\nOutput:");
+        isDirections = conType.includes("Yes") ? true : false;
+
         // Determine the conversation we are having (Possibly make dynamic in the future)
         if (isDirections) {
-            // Recieve the user input and add to prompt
-            const temp = [...text, { content: input, sender: "Guest" }];
+            // Add user intput to the prompt
             directionPrefix = directionPrefix + input;
 
             // Use GPT-3 to find the starting and ending locations within the user input, confirm them (i.e., spelling issues), and 
             // remove blank lines (an issue with GPT-3)
-
             let departure = await GenerateBasic(model, "Return just the departure point from the following text: " + input);
-            departure = await ConfirmLocation(locations, departure);
+            departure = await ConfirmLocation(locations, departure, locIdentExamples);
             departure = RemoveLines(departure);
             let destination = await GenerateBasic(model, "Return just the destination point from the following text: " + input);
-            destination = await ConfirmLocation(locations, destination);
+            destination = await ConfirmLocation(locations, destination, locIdentExamples);
             destination = RemoveLines(destination);
 
-            // TO DO: Output the points to the path finding algorithm and recieve the directions
-
-            // Note: The code below is temporary to test the directions, replace later.
-            const tempDirections = ["right(King Tut Exhibit), left, straight, right, straight, left(Security Office)",
-                "straight, right, left, upstairs, right(Ancient Greek Exhibit), downstairs(Dinosaur Exhibit)",
-                "left(Restroom), straight, right, straight(Lobby)"];
-            const direction = tempDirections[Math.floor(Math.random() * tempDirections.length)];
-
-            // Use GPT-3 to translate the directions into plain text
-            const answer = await GenerateBasic(model, directionPrefix + direction);
-            setText([...temp, { content: `${answer + "\n\n Do you need help getting anywhere else?"}`, sender: "MuseumMate" }]);
-
-            // Ask for more directions and add information to the prefix
-            directionPrefix = directionPrefix + answer + "\n" + "MuseumMate: Do you need help getting anywhere else?";
-            setInput("");
-        }
-        else {
-            // Recieve the user input
-            const temp = [...text, { content: input, sender: "Guest" }];
-            queryPrefix = queryPrefix + input;
-
-            // Use GPT-3 to extract the exhibit name
-            let curExhibit = await GenerateBasic(model, "What is the subject in the following text: " + input);
-            curExhibit = await ConfirmLocation(exhibits, curExhibit);
-            curExhibit = RemoveLines(curExhibit);
-
-            // Supply information to for the chatbot, use exhibit information or MuseumMate information if
-            // no exhibit is specified
-            let information = "";
-            if(curExhibit == "n/a"){
-                information = museumMateInfo;
+            let curDirect = "";
+            // Ensure you get the start and endpoints
+            if(locations.includes(departure) && locations.includes(destination)){
+                // TO DO: Output the points to the path finding algorithm and recieve the directions
+                // Note: The code below is temporary to test the directions, replace later.
+                const tempDirections = ["right(King Tut Exhibit), left, straight, right, straight, left(Security Office)",
+                    "straight, right, left, upstairs, right(Ancient Greek Exhibit), downstairs(Dinosaur Exhibit)",
+                    "left(Restroom), straight, right, straight(Lobby)"];
+                const direction = tempDirections[Math.floor(Math.random() * tempDirections.length)];
+                curDirect = directionPrefix + direction;
             }
             else{
-                exhibitInformation.forEach(index => {
-                    if (curExhibit == index[0]) {
+                curDirect = "Rephrase this: I'm sorry! I couldn't quite figure out where you are and where you are going (some circuits must have crossed). Can you please let me know your current location and where you are trying to go?"
+            }
+
+            // Use GPT-3 to translate the directions into plain text
+            const answer = await GenerateBasic(model, curDirect);
+            setText([...temp, { content: `${answer}`, sender: "MuseumMate" }]);
+            directionPrefix = directionPrefix + answer;
+        }
+        else {
+            // Add user intput to the prompt
+            queryPrefix = queryPrefix + input;
+
+            // Use GPT-3 to extract the subject of the conversation
+            let subject = await ConfirmLocation(exhibits, input, locIdentExamples);
+
+            // Supply information to for the chatbot
+            // If the subject is an exhibit then give exhibit information, if it is about the museum then give specific museum info, else just chat (i.e., info = "")
+            let information = "";
+            if(exhibits.includes(subject)){
+                exhibitInfo.forEach(index => {
+                    if (subject.includes(index[0])) {
+                        information = index[1];
+                    }
+                })
+            }
+            else if(subject.includes("Other")){
+                // This is the same variable extraction as above but for specific museum info from the input
+                // This stops the chatbot from overoutputting information that wasn't explicitly asked
+                subject = await ConfirmLocation(museumTopics, input, musIdentExamples);
+                museumInfo.forEach(index => {
+                    if (subject.includes(index[0])) {
                         information = index[1];
                     }
                 })
             }
 
             // Generate an output
-            let answer = await GenerateChatWithInfo(model, queryPrefix, information, start, restart, stop + ".");
+            const answer = await GenerateChat(model, queryPrefix, information, start, restart, stop + ".");
             queryPrefix = answer[1];
             setText([...temp, { content: `${answer[0]}`, sender: "MuseumMate" }]);
         }
-        setInput(""); //remove user text and reset text input field to default
+        setInput(""); // Remove user text and reset text input field to default
     }
 
     // Fully reset the chatbot text list
     const handleReset = () => {
-        let intro = isDirections ? directionPrompt : queryPrompt;
         setText([]);
-        setText([{ content: intro, sender: "MuseumMate" }])
+        setText([{ content: startPrompt, sender: "MuseumMate" }])
     }
 
 
@@ -342,10 +263,11 @@ export const Chatbot = () => {
 
 };
 
-// This method uses GPT-3 to confirm a natural language input as a set location. Ex. "ancent grek" -> "Ancient Greek Exhibit"
-export const ConfirmLocation = async (locations, inputText) => {
-    const prompt = "Locations: " + locations.join(', ') + "\nReturn just the name from Locations that closest matches the following input: " +
-        inputText + "\nIf no Location matches the input return n/a";
+// This method uses GPT-3 to confirm a natural language input against a set list of data. It requires the set list, input, and a string of training data
+export const ConfirmLocation = async (list, inputText, exampleData) => {
+    inputText = RemoveLines(inputText);
+    const prompt = "Return closest match to the Input from the List. If no match is found, return other." + "\nList: " + list.join(', ') + 
+                    "\n" + exampleData + "Input: " + inputText + "\nOutput:";
     const temp = await GenerateBasic(model, prompt);
     return temp;
 }
