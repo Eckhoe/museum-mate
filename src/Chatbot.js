@@ -275,12 +275,12 @@ export const Chatbot = () => {
     //accessibility below
     //text-to-speech
     const handleTTS = () => {
-        setInput("text-to-speech logic here...")
+        setInput((getSpeech) => [...getSpeech, ...talk]);
     }
 
     // speech-to-text
     const handleSTT = () => {
-        setInput("speech-to-text logic here...")
+        setInput((Listen) => [...Listen, ...Stop, ...End, ...onFinal, ...onInterimResult, ...onStop]);
     }
 
     return (
