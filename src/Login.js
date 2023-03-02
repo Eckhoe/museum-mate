@@ -17,7 +17,7 @@ export const Login = (props) => {
         setValue(localStorage.getItem('email'))
     })
 
-    const isMobile = window.innerWidth <= 768;
+    //const isMobile = window.innerWidth <= 768;
 
     return (
         <>

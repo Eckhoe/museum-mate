@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { GenerateBasic, GenerateChat, GenerateChatWithInfo } from "./GPT-3";
 import "./App.css";
 import "./ChatBot.css";
+import {Loading} from "./Components";
 
 /* This class implements the MuseumMate chatbot using calls to GPT-3 for text generation and React JS for I/O */
 // Global variables
@@ -30,7 +31,7 @@ const Text = ({ text, onTextClick }) => {
         <div className="text-container">
             <div className={textFrom1}>
                 <div className={textFrom} onClick={handleClick}
-                    style={{ cursor: text.sender === "MuseumMate" ? "pointer" : "auto" }}>
+                     style={{ cursor: text.sender === "MuseumMate" ? "pointer" : "auto" }}>
                     <div className="text-sender">{text.sender + ": "}</div>
                     <div className="text-content">{text.content}</div>
                 </div>
@@ -160,7 +161,10 @@ export const Chatbot = () => {
         if (textListEndRef.current) {
             textListEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
-    }, [text]);
+    }, );
+
+    //loading
+    const [isLoading,setLoading] = useState(false);
 
     // On enter add input to text list for display, get chatbot response and add to list as well
     const handleSubmit = async (event) => {
@@ -168,6 +172,8 @@ export const Chatbot = () => {
         if (input.trim() === "") {
             return;
         }
+
+        setLoading(true); //loading animation starts
 
         // Determine the conversation we are having (Possibly make dynamic in the future)
         if (isDirections) {
@@ -195,11 +201,12 @@ export const Chatbot = () => {
 
             // Use GPT-3 to translate the directions into plain text
             const answer = await GenerateBasic(model, directionPrefix + direction);
+            setLoading(false);  //loading animation ends
             setText([...temp, { content: `${answer + "\n\n Do you need help getting anywhere else?"}`, sender: "MuseumMate" }]);
 
             // Ask for more directions and add information to the prefix
             directionPrefix = directionPrefix + answer + "\n" + "MuseumMate: Do you need help getting anywhere else?";
-            setInput("");
+            //setInput(""); //reset input field
         }
         else {
             // Recieve the user input
@@ -228,6 +235,7 @@ export const Chatbot = () => {
             // Generate an output
             let answer = await GenerateChatWithInfo(model, queryPrefix, information, start, restart, stop + ".");
             queryPrefix = answer[1];
+            setLoading(false)  //loading animation ends
             setText([...temp, { content: `${answer[0]}`, sender: "MuseumMate" }]);
         }
         setInput(""); //remove user text and reset text input field to default
@@ -239,7 +247,6 @@ export const Chatbot = () => {
         setText([]);
         setText([{ content: intro, sender: "MuseumMate" }])
     }
-
 
     // Chatbot popup toggle
     const [toggleOn, setToggle] = useState(false);
@@ -283,6 +290,26 @@ export const Chatbot = () => {
         setInput((Listen) => [...Listen, ...Stop, ...End, ...onFinal, ...onInterimResult, ...onStop]);
     }
 
+    //sets chatbot popup default to active if on chatbot page
+    useEffect(() => {
+        const currentUrl = window.location.href;
+        //console.log(currentUrl);
+        if (currentUrl === "http://localhost:3000/chatbot") {
+            setToggle(true);
+        }
+    }, []);
+
+    //sets a loading animation while waiting for chabot response
+    const Loader = () => {
+        if (isLoading) {
+            return (
+                <div>
+                    <Loading/>
+                </div>
+            )
+        }
+    };
+
     return (
         <div>
             {toggleOn ? (
@@ -298,6 +325,7 @@ export const Chatbot = () => {
                             {text.map((text, index) => (
                                 <Text key={index} text={text} onTextClick={handleTextClick} />
                             ))}
+                            <Loader/>
                             <div ref={textListEndRef}></div>
                         </div>
 
@@ -308,10 +336,10 @@ export const Chatbot = () => {
                                 onSubmit={handleSubmit}
                                 onReset={handleReset}
                             >
-                                <input
+                                <input className="form-input"
                                     value={input}
                                     maxLength="100"
-                                    size="40"
+                                    //size="100"
                                     onChange={(event) => setInput(event.target.value)}
                                     placeholder="Enter Text..."
                                 />
