@@ -1,32 +1,34 @@
 import React from "react"
-import {db} from "./Firebase"
+import {db} from "./firebase"
+import {ref, set, get, update, remove, child} from "firebase/database"
+import {useState} from 'react'
+import AddExhibit from "./addExhibit"
+
 
 function Client() {
-    const logout = () => {
-      localStorage.clear();
-      window.location.reload();
-    };
-  
-    const addHoursToFirebase = () => {
-      db.collection("Hours")
-        .add({
-          time: "9am-5pm",
-        })
-        .then(function (docRef) {
-          console.log("Document written with ID: ", docRef.id);
-        })
-        .catch(function (error) {
-          console.error("Error adding document: ", error);
-        });
-    };
-  
-    return (
-      <div>
-        <h1> DASHBOARD</h1>
-        <button onClick={logout}> Logout </button>
-        <button onClick={addHoursToFirebase}>Add Hours</button>
+
+  const [openAddModal, setOpenAddModal] = useState(false)
+
+  return (
+    <div className='exhibits'>
+      <header>Exhibits </header>
+      <div className='container'>
+        <button 
+          onClick={() => setOpenAddModal(true)}>
+          Add Exhibit 
+        </button>
+        
       </div>
-    );
-  }
-  export default Client;
-  
+
+      {openAddModal &&
+        <AddExhibit onClose={() => setOpenAddModal(false)} open={openAddModal}/>
+      }
+
+    </div>
+    
+
+  )
+}
+
+export default Client
+

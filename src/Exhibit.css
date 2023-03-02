@@ -1,0 +1,238 @@
+.exhibit{
+    width: 100%;
+    padding: 15px 20px;
+    border-left: 4px solid hsl(210, 10%, 75%);
+    background-color: white;
+    max-width: 700px;
+    margin: 0 auto;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    box-sizing: border-box;
+  }
+  
+  .exhibit-border{
+    border-color: green;
+    box-shadow: 0 6px 18px -9px hsl(210, 15%, 65%);
+  }
+  
+  .exhibit__body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+  
+  .checkbox-custom {
+    display: none;
+  }
+  .checkbox-custom-label {
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+    margin: 5px;
+    cursor: pointer;
+  }
+  .checkbox-custom + .checkbox-custom-label:before {
+    content: '';
+    background: inherit;
+    border-radius: 5px;
+    border: 2px solid hsl(210, 15%, 70%);
+    display: inline-block;
+    vertical-align: middle;
+    width: 12px; 
+    height: 12px;
+    padding: 2px; 
+    margin-right: 10px;
+  }
+  .checkbox-custom:checked + .checkbox-custom-label:after {
+    content: "";
+    padding: 2px;
+    position: absolute;
+    width: 2px;
+    height: 6px;
+    border: solid green;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+    top: 2px; left: 5px;
+  }
+  
+  .exhibit_body p{
+    margin: 10px 0 0 0;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical; 
+  }
+  
+  .exhibit__buttons{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    align-items: center;
+  }
+  
+  .exhibit__buttons > button {
+    background-color: hsl(210, 70%, 60%);
+    padding: 5px 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+  }
+  
+  .exhibit__buttons > button:hover {
+    background-color: hsl(210, 70%, 50%);
+  }
+  
+  .exhibit__buttons > button:active{
+    background-color: hsl(210, 70%, 60%);
+  }
+  
+  .exhibit__delete button {
+    margin-right: 20px;
+    background-color: transparent;
+    border: none;
+    font-size: 16px;
+    color: hsl(210, 10%, 55%);
+  }
+  
+  .exhibit__editButton:hover {
+    color: hsl(210, 20%, 25%);
+  }
+  
+  .exhibit__editButton:active {
+    color: hsl(210, 10%, 55%);
+  }
+  
+  .exhibit__delete .task__deleteButton {
+    color: hsl(0, 80%, 80%);
+  }
+  
+  .exhibit__deleteButton:hover {
+    color: hsl(0, 70%, 70%);
+  }
+  
+  .exhibit__deleteButton:active {
+    color: hsl(0, 80%, 80%);
+  }
+
+
+
+
+  .exhibitItem{
+    margin-top: 20px;
+  }
+  
+  .exhibitItem h2{
+    font-weight: 400;
+    text-transform: uppercase;
+  }
+  
+  .exhibitItem p{
+    margin-top: 10px;
+    font-size: 18px;
+    max-height: 300px;
+    line-height: 25px;
+    overflow-y: auto;
+    color: hsl(210, 20%, 25%);
+  }
+
+
+
+
+
+  .modalContainer {
+    position: fixed;
+    width: 100vw; 
+    height: 100%;
+    display: flex;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+  
+  .modal{
+    width: 90%;
+    max-width: 500px;
+    border: 5px;
+    padding: 20px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-content: space-between;
+    box-sizing: border-box;
+  }
+  
+  .modal__head{
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+  }
+  
+  .modal__close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 24px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  
+  .modal__close:hover{
+    color: hsl(0, 70%, 70%);
+  }
+
+
+  .edit{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+    z-index: 100;
+  }
+  
+  .edit input{
+    height: 40px;
+    border: unset;
+    font-size: 18px;
+    box-sizing: border-box;
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing: border-box;
+    border-bottom: 1.5px solid hsl(210, 10%, 75%);
+    padding-left: 5px;
+  }
+  
+  .edit input:focus{
+    outline: none;
+  }
+  
+  .edit button {
+    height: 40px;
+    border: none;
+    color: white;
+    background-color: hsl(210, 12%, 15%);
+  }
+  
+  .edit textarea {
+    height: 150px;
+    border-color: hsl(210, 10%, 75%);
+    padding: 5px;
+    font-size: 18px;
+    line-height: 25px;
+  }
+  
+  .edit textarea:focus { 
+    outline: none;
+  }
+  
+  .edit button:hover {
+    background-color: hsl(210, 12%, 25%);
+  }
+  
+  .edit button:active {
+    background-color: hsl(210, 12%, 15%);
+  }
