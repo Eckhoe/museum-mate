@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { GenerateBasic, GenerateChat } from "./GPT-3";
-import { _queryPrefix, _directionPrefix, _museumInfo, _conTypeExamples, _exhibitInfo, _locIdentExamples, _musIdentExamples, _langTypeExamples } from "./InputData";
+import { _queryPrefix, _directionPrefix, _museumInfo, _conTypeExamples, _exhibitInfo, _locIdentExamples, _musIdentExamples, _langTypeExamples, _startPrompt } from "./InputData";
 import "./App.css";
 import "./ChatBot.css";
 import { Loading } from "./Components";
@@ -20,7 +20,8 @@ const conTypeExamples = _conTypeExamples;
 const exhibitInfo = _exhibitInfo;    // TO DO: Query database for information on topics. DON'T FORGET TO UPDATE InputData.JS.
 const locIdentExamples = _locIdentExamples;
 const musIdentExamples = _musIdentExamples;
-const langTypeExamples = _langTypeExamples
+const langTypeExamples = _langTypeExamples;
+const startPrompt = _startPrompt;
 let isDirections = false;
 let directionPrefix = _directionPrefix;
 let queryPrefix = _queryPrefix;
@@ -55,18 +56,12 @@ const Text = ({ text, onTextClick }) => {
 
 // Main chatbot component
 export const Chatbot = () => {
-    // Default input prompt for starting the conversation.
-    const startPrompt = "Hi! I am MuseumMate and I can provide information on all the exhibits around you as well as directions to anywhere in the museum!\n\nWhat language would you like your experience in today?";
-
     // Set the intitial output to match the type of conversation that is happening
     const [input, setInput] = useState("");
-    directionPrefix = directionPrefix + "MuseumMate: " + startPrompt + "\nGuest: ";
-    queryPrefix = queryPrefix + "MuseumMate: " + startPrompt + "\nGuest: ";
 
     // Output the intro
     const [text, setText] = useState([{ content: startPrompt, sender: "MuseumMate" }]);
     const textListEndRef = useRef(null);
-    
 
     // Keep text list scrolled to the latest message
     useEffect(() => {
@@ -91,12 +86,14 @@ export const Chatbot = () => {
         // On first reponse get translation language
         if (firstIt) {
             lang = await GenerateBasic(model, "Retrieve what language the input is asking for.\n" + langTypeExamples + "Input: " + input + "\nOutput:");
+            lang = lang.toLowerCase();
             setText([...temp, { content: "Great, I will set that up for you! Now, what can I help you with?", sender: "MuseumMate" }]);
             firstIt = false;
+            setInput(""); // Remove user text and reset text input field to default
         }
         else {
             // Check the conversation type
-            let conType = await GenerateBasic(model, "Indicate if input is asking for directions.\n" + conTypeExamples + "Input: " + input + "\nOutput:");
+            let conType = await GenerateBasic(model, "Indicate if input is asking for directions. Reply Yes, No or Other.\n" + conTypeExamples + "Input: " + input + "\nOutput:");
             isDirections = conType.includes("Yes") ? true : false;
             setLoading(true); //loading animation starts
 
@@ -132,7 +129,7 @@ export const Chatbot = () => {
                 // Use GPT-3 to translate the directions into plain text
                 let answer = await GenerateBasic(model, curDirect);
                 directionPrefix = directionPrefix + answer;
-                if (lang != "Enlgish") {
+                if (lang != "english") {
                     answer = await GenerateBasic(model, "Translate the following text into " + lang + ": " + answer);
                 }
                 setLoading(false)  //loading animation ends
@@ -169,7 +166,7 @@ export const Chatbot = () => {
                 // Generate an output
                 let answer = await GenerateChat(model, queryPrefix, information, start, restart, stop + ".");
                 queryPrefix = answer[1];
-                if (lang != "Enlgish") {
+                if (lang != "english") {
                     answer[0] = await GenerateBasic(model, "Translate the following text into " + lang + ": " + answer[0]);
                 }
                 setLoading(false)  //loading animation ends

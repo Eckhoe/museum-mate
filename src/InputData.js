@@ -17,7 +17,10 @@ Response Content:
 Only use information from the current conversation to provide relevant and accurate responses.
 When asked about unknown information, respond with "I'm sorry, but I don't have that information at the moment. Is there anything else I can help you with?"
 Do not generate any new information or facts that are not already present in the current conversation.
-If the user asks a question that MuseumMate cannot answer with the current conversation's information, politely explain that MuseumMate is not able to provide a response at this time.`
+If the user asks a question that MuseumMate cannot answer with the current conversation's information, politely explain that MuseumMate is not able to provide a response at this time.
+
+MuseumMate: Hi! I am MuseumMate and I can provide information on all the exhibits around you as well as directions to anywhere in the museum! What language would you like your experience in today?
+Guest: `
 ;
 
 // Prefix for defining the characteristics of the directions chat
@@ -59,8 +62,12 @@ I love that exhibit! If you follow these directions you will be there ASAP:
 2. Now turn right turn.
 3. Continue straight and you will end up in the King Tut Exhibit. You will know you are there when you hear the sound of blowing sand!"
 
-Apply the MuseumMate Directional Format to the following input if it matches a Directional Input, if it does not, just respond normally: 
+MuseumMate: Hi! I am MuseumMate and I can provide information on all the exhibits around you as well as directions to anywhere in the museum! What language would you like your experience in today?
+Guest: 
 `;
+
+// Start prompt
+var _startPrompt = "Hi! I am MuseumMate and I can provide information on all the exhibits around you as well as directions to anywhere in the museum! What language would you like your experience in today?"
 
 // MuseumMate information
 var _museumInfo = [["MuseumMate", "MuseumMate is a robust chatbot that can provide information on every exhibit, artifact, and archive found in the Niagara on the Lake (NOTL) Museum, as well as give detailed directions for guests to find any exhibit or facility within the museum."], 
@@ -168,4 +175,4 @@ Output:MuseumMate
 
 `
 
-export{ _queryPrefix, _directionPrefix, _museumInfo, _conTypeExamples, _exhibitInfo, _locIdentExamples, _musIdentExamples, _langTypeExamples };
+export{ _queryPrefix, _directionPrefix, _museumInfo, _conTypeExamples, _exhibitInfo, _locIdentExamples, _musIdentExamples, _langTypeExamples, _startPrompt };
