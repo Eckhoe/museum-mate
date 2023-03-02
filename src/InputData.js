@@ -100,7 +100,27 @@ Input: Are there any events approaching?
 Output:No
 Input: What are some famous exhibits?
 Output:No
+
 `
+// Few-shot training data for identifying the language
+var _langTypeExamples = `Examples:
+Input: Translate into urdu?
+Output:Urdu
+Input: Can you tell me in mandarin?
+Output:Mandarin
+Input: I don't understand, do you speak Italian?
+Output:Italian
+Input: Speak Spanish?
+Output:Spanish
+Input: Can you speak Swahili?
+Output:Swahili
+Input: Korean please
+Output:Korean
+Input: Change back to English.
+Output:English
+
+`
+
 // Testing Exhibit Information
 var _exhibitInfo = [
     ["Dinosaur Exhibit", `Dinosaurs are a diverse group of reptiles of the clade Dinosauria. They first appeared during the Triassic period, between 245 and 233.23 million years ago (mya), although the exact origin and timing of the evolution of dinosaurs is the subject of active research. They became the dominant terrestrial vertebrates after the Triassic-Jurassic extinction event 201.3 mya; their dominance continued throughout the Jurassic and Cretaceous periods. The fossil record shows that birds are feathered dinosaurs, having evolved from earlier theropods during the Late Jurassic epoch, and are the only dinosaur lineage known to have survived the Cretaceous-Paleogene extinction event approximately 66 mya. Dinosaurs can therefore be divided into avian dinosaurs—birds—and the extinct non-avian dinosaurs, which are all dinosaurs other than birds.
@@ -148,4 +168,4 @@ Output:MuseumMate
 
 `
 
-export{ _queryPrefix, _directionPrefix, _museumInfo, _conTypeExamples, _exhibitInfo, _locIdentExamples, _musIdentExamples };
+export{ _queryPrefix, _directionPrefix, _museumInfo, _conTypeExamples, _exhibitInfo, _locIdentExamples, _musIdentExamples, _langTypeExamples };
