@@ -1,5 +1,5 @@
 import React from "react"
-import {db} from "./firebase"
+import {db} from "./Firebase"
 import {ref, set, get, update, remove, child} from "firebase/database"
 import {useState} from 'react'
 import AddExhibit from "./addExhibit"
@@ -8,6 +8,10 @@ import AddExhibit from "./addExhibit"
 function Client() {
 
   const [openAddModal, setOpenAddModal] = useState(false)
+   const logout = () => {
+    localStorage.clear();
+    window.location.reload();
+  };
 
   return (
     <div className='exhibits'>
@@ -17,6 +21,7 @@ function Client() {
           onClick={() => setOpenAddModal(true)}>
           Add Exhibit 
         </button>
+        <button onClick={logout}> Logout </button>
         
       </div>
 

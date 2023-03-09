@@ -22,7 +22,7 @@ export const Login = (props) => {
     return (
         <>
             <div className="input-group">
-                <h1>MuseumMate</h1>
+                <h1>MuseumMate Admin</h1>
                 {value ? <Client/> : <button onClick={handleClick}>Sign In With Google</button>}
             </div>
         </>

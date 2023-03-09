@@ -1,4 +1,4 @@
-import {db} from './firebase'
+import {db} from './Firebase'
 import {collection, addDoc, Timestamp} from 'firebase/firestore'
 import React, { useState } from 'react';
 import './addExhibit.css'

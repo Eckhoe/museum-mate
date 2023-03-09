@@ -29,6 +29,9 @@
     justify-content: space-between;
     position: relative;
   }
+  .modalLabel {
+    color: black;
+  }  
   
   .modal__close {
     position: absolute;
