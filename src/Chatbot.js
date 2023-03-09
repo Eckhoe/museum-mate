@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { GenerateBasic, GenerateChat } from "./GPT-3";
-import { _queryPrefix, _directionPrefix, _museumInfo, _conTypeExamples, _exhibitInfo, _locIdentExamples, _musIdentExamples, _langTypeExamples, _startPrompt } from "./InputData";
+import { _queryPrefix, _directionPrefix, _museumInfo, _conTypeExamples, _exhibitInfo, _locIdentExamples, _musIdentExamples, _startPrompt } from "./InputData";
 import "./App.css";
 import "./ChatBot.css";
 import { Loading } from "./Components";
@@ -20,12 +20,10 @@ const conTypeExamples = _conTypeExamples;
 const exhibitInfo = _exhibitInfo;    // TO DO: Query database for information on topics. DON'T FORGET TO UPDATE InputData.JS.
 const locIdentExamples = _locIdentExamples;
 const musIdentExamples = _musIdentExamples;
-const langTypeExamples = _langTypeExamples;
 const startPrompt = _startPrompt;
 let isDirections = false;
 let directionPrefix = _directionPrefix;
 let queryPrefix = _queryPrefix;
-let firstIt = true;
 let lang = "English";
 
 
@@ -70,7 +68,7 @@ export const Chatbot = () => {
         }
     },);
 
-    //loading
+    // Set loading
     const [isLoading, setLoading] = useState(false);
 
     // On enter add input to text list for display, get chatbot response and add to list as well
@@ -83,97 +81,86 @@ export const Chatbot = () => {
         // Get user input
         const temp = [...text, { content: input, sender: "Guest" }];
 
-        // On first reponse get translation language
-        if (firstIt) {
-            lang = await GenerateBasic(model, "Retrieve what language the input is asking for.\n" + langTypeExamples + "Input: " + input + "\nOutput:");
-            lang = lang.toLowerCase();
-            setText([...temp, { content: "Great, I will set that up for you! Now, what can I help you with?", sender: "MuseumMate" }]);
-            firstIt = false;
-            setInput(""); // Remove user text and reset text input field to default
-        }
-        else {
-            // Check the conversation type
-            let conType = await GenerateBasic(model, "Indicate if input is asking for directions. Reply Yes, No or Other.\n" + conTypeExamples + "Input: " + input + "\nOutput:");
-            isDirections = conType.includes("Yes") ? true : false;
-            setLoading(true); //loading animation starts
+        // Check the conversation type
+        let conType = await GenerateBasic(model, "Indicate if input is asking for directions. Reply Yes, No or Other.\n" + conTypeExamples + "Input: " + input + "\nOutput:");
+        isDirections = conType.includes("Yes") ? true : false;
+        setLoading(true); //loading animation starts
 
-            // Determine the conversation we are having
-            if (isDirections) {
-                // Add user intput to the prompt
-                directionPrefix = directionPrefix + input;
+        // Determine the conversation we are having
+        if (isDirections) {
+            // Add user intput to the prompt
+            directionPrefix = directionPrefix + input;
 
-                // Use GPT-3 to find the starting and ending locations within the user input, confirm them (i.e., spelling issues), and 
-                // remove blank lines (an issue with GPT-3)
-                let departure = await GenerateBasic(model, "Return just the departure point from the following text: " + input);
-                departure = await ConfirmLocation(locations, departure, locIdentExamples);
-                departure = RemoveLines(departure);
-                let destination = await GenerateBasic(model, "Return just the destination point from the following text: " + input);
-                destination = await ConfirmLocation(locations, destination, locIdentExamples);
-                destination = RemoveLines(destination);
+            // Use GPT-3 to find the starting and ending locations within the user input and confirm them (i.e., spelling issues)
+            let departure = await GenerateBasic(model, "Return just the departure point from the following text: " + input);
+            departure = await ConfirmLocation(locations, departure, locIdentExamples);
+            departure = RemoveLines(departure);
+            let destination = await GenerateBasic(model, "Return just the destination point from the following text: " + input);
+            destination = await ConfirmLocation(locations, destination, locIdentExamples);
+            destination = RemoveLines(destination);
 
-                let curDirect = "";
-                // Ensure you get the start and endpoints
-                if (locations.includes(departure) && locations.includes(destination)) {
-                    // TO DO: Output the points to the path finding algorithm and recieve the directions
-                    // Note: The code below is temporary to test the directions, replace later.
-                    const tempDirections = ["right(King Tut Exhibit), left, straight, right, straight, left(Security Office)",
-                        "straight, right, left, upstairs, right(Ancient Greek Exhibit), downstairs(Dinosaur Exhibit)",
-                        "left(Restroom), straight, right, straight(Lobby)"];
-                    const direction = tempDirections[Math.floor(Math.random() * tempDirections.length)];
-                    curDirect = directionPrefix + direction;
-                }
-                else {
-                    curDirect = "Rephrase this: I'm sorry! I couldn't quite figure out where you are and where you are going (some circuits must have crossed). Can you please let me know your current location and where you are trying to go?"
-                }
-
-                // Use GPT-3 to translate the directions into plain text
-                let answer = await GenerateBasic(model, curDirect);
-                directionPrefix = directionPrefix + answer;
-                if (lang != "english") {
-                    answer = await GenerateBasic(model, "Translate the following text into " + lang + ": " + answer);
-                }
-                setLoading(false)  //loading animation ends
-                setText([...temp, { content: `${answer}`, sender: "MuseumMate" }]);
+            let curDirect = "";
+            // Ensure you get the start and endpoints
+            if (locations.includes(departure) && locations.includes(destination)) {
+                // TO DO: Output the points to the path finding algorithm and recieve the directions
+                // Note: The code below is temporary to test the directions, replace later.
+                const tempDirections = ["right(King Tut Exhibit), left, straight, right, straight, left(Security Office)",
+                    "straight, right, left, upstairs, right(Ancient Greek Exhibit), downstairs(Dinosaur Exhibit)",
+                    "left(Restroom), straight, right, straight(Lobby)"];
+                const direction = tempDirections[Math.floor(Math.random() * tempDirections.length)];
+                curDirect = directionPrefix + direction;
             }
             else {
-                // Add user intput to the prompt
-                queryPrefix = queryPrefix + input;
-
-                // Use GPT-3 to extract the subject of the conversation
-                let subject = await ConfirmLocation(exhibits, input, locIdentExamples);
-
-                // Supply information to for the chatbot
-                // If the subject is an exhibit then give exhibit information, if it is about the museum then give specific museum info, else just chat (i.e., info = "")
-                let information = "";
-                if (exhibits.includes(subject)) {
-                    exhibitInfo.forEach(index => {
-                        if (subject.includes(index[0])) {
-                            information = index[1];
-                        }
-                    })
-                }
-                else if (subject.includes("Other")) {
-                    // This is the same variable extraction as above but for specific museum info from the input
-                    // This stops the chatbot from overoutputting information that wasn't explicitly asked
-                    subject = await ConfirmLocation(museumTopics, input, musIdentExamples);
-                    museumInfo.forEach(index => {
-                        if (subject.includes(index[0])) {
-                            information = index[1];
-                        }
-                    })
-                }
-
-                // Generate an output
-                let answer = await GenerateChat(model, queryPrefix, information, start, restart, stop + ".");
-                queryPrefix = answer[1];
-                if (lang != "english") {
-                    answer[0] = await GenerateBasic(model, "Translate the following text into " + lang + ": " + answer[0]);
-                }
-                setLoading(false)  //loading animation ends
-                setText([...temp, { content: `${answer[0]}`, sender: "MuseumMate" }]);
+                curDirect = "Rephrase this: I'm sorry! I couldn't quite figure out where you are and where you are going (some circuits must have crossed). Can you please let me know your current location and where you are trying to go?"
             }
-            setInput(""); // Remove user text and reset text input field to default
+
+            // Use GPT-3 to translate the directions into plain text
+            let answer = await GenerateBasic(model, curDirect);
+            directionPrefix = directionPrefix + answer;
+            if (lang != "english") {
+                answer = await GenerateBasic(model, "Translate the following text into " + lang + ": " + answer);
+            }
+            setLoading(false)  // Loading animation ends
+            setText([...temp, { content: `${answer}`, sender: "MuseumMate" }]);
         }
+        else {
+            // Add user intput to the prompt
+            queryPrefix = queryPrefix + input;
+
+            // Use GPT-3 to extract the subject of the conversation
+            let subject = await ConfirmLocation(exhibits, input, locIdentExamples);
+
+            // Supply information to for the chatbot
+            // If the subject is an exhibit then give exhibit information, if it is about the museum then give specific museum info, else just chat (i.e., info = "")
+            let information = "";
+            if (exhibits.includes(subject)) {
+                exhibitInfo.forEach(index => {
+                    if (subject.includes(index[0])) {
+                        information = index[1];
+                    }
+                })
+            }
+            else if (subject.includes("Other")) {
+                // This is the same variable extraction as above but for specific museum info from the input
+                // This stops the chatbot from overoutputting information that wasn't explicitly asked
+                subject = await ConfirmLocation(museumTopics, input, musIdentExamples);
+                museumInfo.forEach(index => {
+                    if (subject.includes(index[0])) {
+                        information = index[1];
+                    }
+                })
+            }
+
+            // Generate an output
+            let answer = await GenerateChat(model, queryPrefix, information, start, restart, stop + ".");
+            queryPrefix = answer[1];
+            if (lang != "english") {
+                answer[0] = await GenerateBasic(model, "Translate the following text into " + lang + ": " + answer[0]);
+            }
+            setLoading(false)  //loading animation ends
+            setText([...temp, { content: `${answer[0]}`, sender: "MuseumMate" }]);
+        }
+        setInput(""); // Remove user text and reset text input field to default
     }
 
     // Fully reset the chatbot text list
@@ -213,18 +200,18 @@ export const Chatbot = () => {
         return () => clearTimeout(timeout);
     }, []);
 
-    //accessibility below
-    //text-to-speech
+    // Accessibility below
+    // Text-to-speech
     const handleTTS = () => {
         setInput((getSpeech) => [...getSpeech, ...talk]);
     }
 
-    // speech-to-text
+    // Speech-to-text
     const handleSTT = () => {
         setInput((Listen) => [...Listen, ...Stop, ...End, ...onFinal, ...onInterimResult, ...onStop]);
     }
 
-    //sets chatbot popup default to active if on chatbot page
+    // Sets chatbot popup default to active if on chatbot page
     useEffect(() => {
         const currentUrl = window.location.href;
         //console.log(currentUrl);
@@ -233,7 +220,7 @@ export const Chatbot = () => {
         }
     }, []);
 
-    //sets a loading animation while waiting for chabot response
+    // Sets a loading animation while waiting for chabot response
     const Loader = () => {
         if (isLoading) {
             return (

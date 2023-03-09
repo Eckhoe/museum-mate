@@ -4,10 +4,6 @@ import {useState} from 'react'
 import Modal from "./Modal"
 import '/.modal.css'
 
-
-
-
-
 function Modal({open, modalLable, children, custom_modal, onClose}) {
 
     const handleClose = (e) => {
@@ -33,8 +29,6 @@ function Modal({open, modalLable, children, custom_modal, onClose}) {
     return null
   }
 
-
-
   function Edit({open, onClose, toEditTitle, toEditDescription, id}) {
 
     const [title, setTitle] = useState(toEditTitle)
@@ -56,12 +50,6 @@ function Modal({open, modalLable, children, custom_modal, onClose}) {
       </Modal>
     )
   }
-
-
-
-
-
-
 
 function TheExhibit({onClose, open, title, description}) {
 
@@ -141,7 +129,5 @@ function Exhibit ({id, title, description, completed}) {
     </div>
   )
 }
-
-
 
 export default Exhibit
