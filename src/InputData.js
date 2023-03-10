@@ -109,24 +109,6 @@ Input: What are some famous exhibits?
 Output:No
 
 `
-// Few-shot training data for identifying the language
-var _langTypeExamples = `Examples:
-Input: Translate into urdu?
-Output:Urdu
-Input: Can you tell me in mandarin?
-Output:Mandarin
-Input: I don't understand, do you speak Italian?
-Output:Italian
-Input: Speak Spanish?
-Output:Spanish
-Input: Can you speak Swahili?
-Output:Swahili
-Input: Korean please
-Output:Korean
-Input: Change back to English.
-Output:English
-
-`
 
 // Testing Exhibit Information
 var _exhibitInfo = [
@@ -175,4 +157,4 @@ Output:MuseumMate
 
 `
 
-export{ _queryPrefix, _directionPrefix, _museumInfo, _conTypeExamples, _exhibitInfo, _locIdentExamples, _musIdentExamples, _langTypeExamples, _startPrompt };
+export{ _queryPrefix, _directionPrefix, _museumInfo, _conTypeExamples, _exhibitInfo, _locIdentExamples, _musIdentExamples, _startPrompt };
