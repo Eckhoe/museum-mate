@@ -15,11 +15,11 @@ function Client() {
 
   return (
     <div className='exhibits'>
-      <header>Exhibits </header>
+      <b>Artifacts</b>
       <div className='container'>
         <button 
           onClick={() => setOpenAddModal(true)}>
-          Add Exhibit 
+          Add Artifact 
         </button>
         <button onClick={logout}> Logout </button>
         

@@ -1,8 +1,8 @@
 .exhibit{
     width: 100%;
-    padding: 15px 20px;
+    padding: 15px 200px;
     border-left: 4px solid hsl(210, 10%, 75%);
-    background-color: white;
+    background-color: rgb(243, 236, 236);
     max-width: 700px;
     margin: 0 auto;
     display: flex;
@@ -18,7 +18,7 @@
   
   .exhibit__body {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     flex-grow: 1;
   }
   
@@ -115,10 +115,6 @@
   .exhibit__deleteButton:active {
     color: hsl(0, 80%, 80%);
   }
-
-
-
-
   .exhibitItem{
     margin-top: 20px;
   }

@@ -48,7 +48,7 @@ function Modal({open, modalLable, children, custom_modal, onClose}) {
           <input 
             type='text' 
             name='title' 
-            onChange={(e) => setTitle(e.target.value.toUpperCase())} 
+            onChange={(e) => setTitle(e.target.value)} 
             value={title}/>
           <textarea onChange={(e) => setDescription(e.target.value)} value={description}></textarea>
           <button type='submit'>Edit</button>
