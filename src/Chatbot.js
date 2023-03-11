@@ -39,13 +39,48 @@ const Text = ({ text, onTextClick }) => {
         }
     };
 
+    //src="https://www.youtube.com/embed/elp6ZktpQ1c"
+    //add video component: "https://www.youtube.com/embed/"+VIDEO_ID+?{any options below}
+    // autoplay=1  autoplay enabled
+    // cc_lang_pref=en caption language (use ISO 639-1 Code http://www.loc.gov/standards/iso639-2/php/code_list.php)
+    // cc_load_policy=1 captions on by default
+    // controls=0 player controls not displayed
+    // modestbranding=1 no youtube logo
+
     return (
         <div className="text-container">
             <div className={textFrom1}>
                 <div className={textFrom} onClick={handleClick}
                     style={{ cursor: text.sender === "MuseumMate" ? "pointer" : "auto" }}>
                     <div className="text-sender">{text.sender + ": "}</div>
-                    <div className="text-content">{text.content}</div>
+                    {text.image ? (
+                        <>
+                            <div className="text-content">{text.content}</div>
+                            {text.video ? (
+                                <iframe height="315" src={"https://www.youtube.com/embed/"+text.video+"?autoplay=1"}
+                                        title="YouTube video player"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowFullScreen>
+                                </iframe>
+                            ) : (
+                                <></>
+                            )}
+                            <img className="text-image" src={text.image} alt="Displayed image from database here"/>
+                        </>
+                    ) : (
+                        <>
+                            {text.video ? (
+                                <iframe height="315" src={"https://www.youtube.com/embed/"+text.video+"?autoplay=1"}
+                                        title="YouTube video player"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowFullScreen>
+                                </iframe>
+                            ) : (
+                                <></>
+                            )}
+                            <div className="text-content">{text.content}</div>
+                        </>
+                    )}
                 </div>
             </div>
         </div>
@@ -57,8 +92,13 @@ export const Chatbot = () => {
     // Set the intitial output to match the type of conversation that is happening
     const [input, setInput] = useState("");
 
+    //test video/image
+    const imageOutput = "/image1.jpg"; //replace with image pulled from database / url link
+    const videoOutput = "elp6ZktpQ1c"; //replace with ending url of video from youtube or database
+    //
+
     // Output the intro
-    const [text, setText] = useState([{ content: startPrompt, sender: "MuseumMate" }]);
+    const [text, setText] = useState([{ content: startPrompt, sender: "MuseumMate", image: null, video: null }]);
     const textListEndRef = useRef(null);
 
     // Keep text list scrolled to the latest message
@@ -121,7 +161,7 @@ export const Chatbot = () => {
                 answer = await GenerateBasic(model, "Translate the following text into " + lang + ": " + answer);
             }
             setLoading(false)  // Loading animation ends
-            setText([...temp, { content: `${answer}`, sender: "MuseumMate" }]);
+            setText([...temp, { content: `${answer}`, sender: "MuseumMate", image: null, video: null }]);
         }
         else {
             // Add user intput to the prompt
@@ -158,7 +198,7 @@ export const Chatbot = () => {
                 answer[0] = await GenerateBasic(model, "Translate the following text into " + lang + ": " + answer[0]);
             }
             setLoading(false)  //loading animation ends
-            setText([...temp, { content: `${answer[0]}`, sender: "MuseumMate" }]);
+            setText([...temp, { content: `${answer[0]}`, sender: "MuseumMate", image: null, video: null }]);
         }
         setInput(""); // Remove user text and reset text input field to default
     }
@@ -184,7 +224,6 @@ export const Chatbot = () => {
         "What are some famous exhibits?",
         "Are there any events approaching?",
         "What are the hours of operation?",
-        "Other options..."
     ];
 
     // Initial suggestions display

@@ -1,4 +1,4 @@
-import {BrowserRouter, Link, Outlet, Route, Router, Routes} from "react-router-dom";
+import {BrowserRouter, Link, Outlet, Route, Routes} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 
 import "./Components.css"
@@ -13,10 +13,9 @@ const NavigationBar = () => {
         <>
             <div className="navbar">
                 <Link to="/" className="nav-option">Home</Link>
-
                 <Link to="/directions" className="nav-option">Directions</Link>
                 <Link to="/chatbot" className="nav-option">Chat-Bot</Link>
-                <Link to="/Login" className="nav-option">About/Admin</Link>
+                <Link to="/Login" className="nav-option">Admin</Link>
             </div>
             <Outlet/>
         </>
