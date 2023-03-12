@@ -3,7 +3,7 @@ import { GenerateBasic, GenerateChat } from "./GPT-3";
 import { _queryPrefix, _directionPrefix, _museumInfo, _conTypeExamples, _exhibitInfo, _locIdentExamples, _musIdentExamples, _startPrompt } from "./InputData";
 import "./App.css";
 import "./ChatBot.css";
-import { Loading } from "./Components";
+import {LanguageSelector, Loading} from "./Components";
 
 /* This class implements the MuseumMate chatbot using calls to GPT-3 for text generation and React JS for I/O */
 // Global variables
@@ -92,9 +92,11 @@ export const Chatbot = () => {
     // Set the intitial output to match the type of conversation that is happening
     const [input, setInput] = useState("");
 
-    //test video/image
-    const imageOutput = "/image1.jpg"; //replace with image pulled from database / url link
-    const videoOutput = "elp6ZktpQ1c"; //replace with ending url of video from youtube or database
+    // video/image that is added to chabot reply text through setText
+    // @imageOutput contains an image pulled from the database or a url link
+    // @videoOutput contains the end ending url segment of video from youtube or database
+    const imageOutput = "/image1.jpg";
+    const videoOutput = "elp6ZktpQ1c"; //war of 1812 link
     //
 
     // Output the intro
@@ -270,6 +272,14 @@ export const Chatbot = () => {
         }
     };
 
+    // selected language for user-chabot interaction
+    // @language contains the currently selected language from the chatbot drop down menu
+    const [language, setLanguage] = useState("English");
+
+    const handleLanguageChange = (language) => {
+        setLanguage(language);
+    };
+
     return (
         <div>
             {toggleOn ? (
@@ -277,6 +287,7 @@ export const Chatbot = () => {
 
                     <div className="chatbot-components">
                         <div className="chatbot-header">
+                            <LanguageSelector onlanguagechange={handleLanguageChange}/>
                             <h1 className="chatbot-title">ChatBot</h1>
                             <button onClick={() => setToggle(false)}>Minimize</button>
                         </div>

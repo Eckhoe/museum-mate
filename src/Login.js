@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import {auth, provider} from "./Firebase"
 import {signInWithPopup} from "firebase/auth";
 import Client from "./Client";
+import {Footer} from "./Components";
 
 export const Login = (props) => {
     const [value, setValue] = useState('')
@@ -25,6 +26,7 @@ export const Login = (props) => {
                 <h1>MuseumMate Admin</h1>
                 {value ? <Client/> : <button onClick={handleClick}>Sign In With Google</button>}
             </div>
+            <Footer/>
         </>
     )
 }

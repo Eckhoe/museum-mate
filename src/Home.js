@@ -1,5 +1,5 @@
 import "./Home.css";
-import {ImageChangerComponent} from "./Components";
+import {Footer, ImageChangerComponent} from "./Components";
 import Chatbot from "./Chatbot";
 
 const Home = () => {
@@ -13,42 +13,80 @@ const Home = () => {
     const isMobile = window.innerWidth <= 768;
 
     return (
+        <>
+            <div className="container">
 
-        <div className="container">
+                {isMobile ? <> Mobile layout - Home
 
-            {isMobile ? <> Mobile layout - Home
-
-                <h1>Niagara On The Lake Museum</h1>
-                
+                    <h1>Niagara On The Lake Museum</h1>
 
 
-            </> : <div>
+                </> : <div>
 
-                <Chatbot/>
+                    <Chatbot/>
 
-                <h1>Niagara On The Lake Museum</h1>
-                <div className="center">
-                    <div className="center-img"></div>
-                </div>
-
-                <div className="row">
-                    <div className="image">
-                        <ImageChangerComponent/>
+                    <h1>Niagara On The Lake Museum</h1>
+                    <div className="center">
+                        <div className="center-img"></div>
                     </div>
-                    <div className="text"> Text / info about museum</div>
-                </div>
 
-                <div className="row">
-                    <div className="text"> Hours</div>
-                    <div className="text"> Upcoming events</div>
-                </div>
+                    <div className="row">
+                        <div className="image">
+                          <ImageChangerComponent/>
+                        </div>
+                        <div className="text"> Text / info about museum</div>
+                    </div>
 
-                <div className="row">
-                    <div className="text"> Possible museum twitter feed</div>
-                    <div className="text"> Location / contact info</div>
-                </div>
-            </div>}
-        </div>
+                    <div className="row">
+                        <div className="text"> Hours
+                            <table>
+                                <tr>
+                                    <td>Monday</td>
+                                    <td>1pm - 5pm</td>
+                                </tr>
+                                <tr>
+                                    <td>Tuesday</td>
+                                    <td>1pm - 5pm</td>
+                                </tr>
+                                <tr>
+                                    <t>Wednesday</t>
+                                    <td>1pm - 5pm</td>
+                                </tr>
+                                <tr>
+                                    <td>Thursday</td>
+                                    <td>1pm - 5pm</td>
+                                </tr>
+                                <tr>
+                                    <td>Friday</td>
+                                    <td>1pm - 5pm</td>
+                                </tr>
+                                <tr>
+                                    <td>Saturday</td>
+                                    <td>1pm - 5pm</td>
+                                </tr>
+                                <tr>
+                                    <td>Sunday</td>
+                                    <td>1pm - 5pm</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div className="text"> Upcoming events</div>
+                    </div>
+
+                    <div className="row">
+                        <div className="text"> Possible museum twitter feed</div>
+                        <div className="text">
+                            <p>43 Castlereagh St, Niagara-on-the-Lake, ON L0S 1J0
+                                (maybe add map)</p>
+                            <p>Phone: (905) 468-3912</p>
+                            <p>Email: contact@nhsm.ca</p>
+                        </div>
+                    </div>
+                </div>}
+
+            </div>
+            <Footer/>
+        </>
     )
 };
 

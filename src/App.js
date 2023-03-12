@@ -1,4 +1,4 @@
-import {Footer, PageRouter} from "./Components"
+import {PageRouter} from "./Components"
 import './App.css';
 
 function App() {
@@ -6,7 +6,6 @@ function App() {
   return (
     <div className="App">
         <PageRouter/>
-        <Footer/>
     </div>
 
   );

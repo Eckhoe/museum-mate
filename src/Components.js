@@ -97,9 +97,23 @@ const PageRouter = () => {
 //footer component for site
 const Footer = () => {
     return (
+        <>
         <div className="footer">
-            Copyright info, Privacy Policy Link, Contact info, Group info ect...
+            <div className="footer-text">
+                <p>About</p>
+                <p>Group information</p>
+            </div>
+            <div className="footer-text">
+                <p>Copyright information</p>
+                <p>Privacy Policy Link</p>
+            </div>
+            <div className="footer-text">
+
+                <p>Contact information</p>
+                <p>Resources</p>
+            </div>
         </div>
+        </>
     );
 };
 
@@ -114,4 +128,52 @@ const Loading = () => {
     );
 };
 
-export {NavigationBar, ImageChangerComponent, PageRouter, Footer, Loading};
+//language drop down selector component flag images are linked through url from https://flagpedia.net/download/api
+const LanguageSelector = (props) => {
+
+    const flagList = [
+        {lang: "English", flagID: "ca"},
+        {lang: "French", flagID: "fr"},
+        {lang: "Spanish", flagID: "es"},
+        {lang: "German", flagID: "de"}
+    ]
+
+    const [selectedLanguage, setLanguage] = useState("English");
+    const [flag, setFlag] = useState("ca");
+
+    // update the selected language
+    function handleLanguageChange(event) {
+        const language = event.target.value;
+        setLanguage(language);
+        props.onlanguagechange(language);
+        setFlag(getFlag(language));
+    }
+
+    // find the flag corresponding to the given language
+    function getFlag(lang) {
+        const language = flagList.find(obj => obj.lang === lang);
+        return language ? language.flagID : "";
+    }
+
+    return (
+        <div className="language-selector-container">
+            <label className="language-label">Language:</label>
+            <div className="language-selector">
+            <img className="language-flag" src={"https://flagcdn.com/256x192/"+flag+".png"} alt="Country flag"/>
+
+                <select
+                    className="language-select"
+                    value={selectedLanguage}
+                    onChange={handleLanguageChange}>
+
+                    <option value="English">English</option>
+                    <option value="French">French</option>
+                    <option value="Spanish">Spanish</option>
+                    <option value="German">German</option>
+                </select>
+            </div>
+        </div>
+    );
+};
+
+export {NavigationBar, ImageChangerComponent, PageRouter, Footer, Loading, LanguageSelector};
