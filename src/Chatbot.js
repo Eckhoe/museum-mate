@@ -10,10 +10,11 @@ import {
 } from "./ChatbotHelper";
 import React, { useEffect, useRef, useState } from "react";
 import { GenerateBasic, GenerateChat } from "./GPT-3";
-import { LanguageSelector, Loading } from "./Components"
 import "./App.css";
-import "./ChatBot.css";;
-
+import "./ChatBot.css";
+import {LanguageSelector, Loading} from "./Components";
+import SpeechRecognition , {useSpeechRecognition} from 'react-speech-recognition';
+import {useSpeechSynthesis} from 'react-speech-kit'
 /* This class implements the MuseumMate chatbot using calls to GPT-3 for text generation and React JS for I/O */
 // Global variables
 // TO DO: Change these variables to the final exhibits being used. Also update directionPrefix.
@@ -100,6 +101,12 @@ const Text = ({ text, onTextClick }) => {
 export const Chatbot = () => {
     // Set the intitial output to match the type of conversation that is happening
     const [input, setInput] = useState("");
+    //Hook for variable use to capture speech to text
+    const {transcript}= useSpeechRecognition();
+    //Hook for variable use to capture text to speech
+    const{speak}=useSpeechSynthesis();
+    //use state for variable use to capture text to speech
+    const [reply, setReply] = useState("");
 
     // video/image that is added to chabot reply text through setText
     // @imageOutput contains an image pulled from the database or a url link
@@ -120,9 +127,10 @@ export const Chatbot = () => {
 
     // Set loading
     const [isLoading, setLoading] = useState(false);
-
+    
     // On enter add input to text list for display, get chatbot response and add to list as well
     const handleSubmit = async (event) => {
+        
         event.preventDefault();
         if (input.trim() === "") {
             return;
@@ -133,6 +141,8 @@ export const Chatbot = () => {
         setLoading(true); // Loading animation starts
         let answer = await chat(input);
         setText([...temp, { content: `${answer}`, sender: "MuseumMate", image: null, video: null }]);
+        setReply(answer) ;
+        console.log(reply);
         setInput(""); // Remove user text and reset text input field to default
         setLoading(false); // Loading animation ends
     }
@@ -176,13 +186,13 @@ export const Chatbot = () => {
     // Accessibility below
     // Text-to-speech
     const handleTTS = () => {
-        setInput((getSpeech) => [...getSpeech, ...talk]);
+        speak({text:reply});
     }
 
     // Speech-to-text
-    const handleSTT = () => {
-        setInput((Listen) => [...Listen, ...Stop, ...End, ...onFinal, ...onInterimResult, ...onStop]);
-    }
+    useEffect(() => {
+        setInput(transcript);
+    }, [transcript])
 
     // Sets chatbot popup default to active if on chatbot page
     useEffect(() => {
@@ -253,11 +263,11 @@ export const Chatbot = () => {
                                 <button className="chatbot-button" type="reset">
                                     Reset
                                 </button>
-                                <button className="chatbot-button" type="button" onClick={handleTTS}>
-                                    Text-To-speech
+                                <button onClick={SpeechRecognition.startListening} >
+                                Mic Start
                                 </button>
-                                <button className="chatbot-button" type="button" onClick={handleSTT}>
-                                    Speech-To-Text
+                                <button onClick={handleTTS}>
+                                Speak
                                 </button>
                             </form>
                         </div>
