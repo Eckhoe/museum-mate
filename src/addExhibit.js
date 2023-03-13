@@ -8,7 +8,7 @@ import Modal from "./Modal"
 const addExhibitsSubmit = async (e, title, description, date, objId, people, subject, imgUrl, onClose) => {
     e.preventDefault()
     try {
-      await addDoc(collection(db, 'exhibits'), {
+      await addDoc(collection(db, 'artifacts'), {
         title: title,
         description: description,
         date: date,
@@ -47,7 +47,7 @@ const addExhibitsSubmit = async (e, title, description, date, objId, people, sub
             placeholder='Enter Name'/>
           <textarea 
             onChange={(e) => setDescription(e.target.value)}
-            placeholder='Enter exhibit decription'
+            placeholder='Enter exhibit description'
             value={description}> 
             </textarea>
           <textarea 
