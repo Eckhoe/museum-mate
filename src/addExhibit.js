@@ -5,17 +5,17 @@ import './addExhibit.css'
 import Modal from "./Modal"
 
 
-const addExhibitsSubmit = async (e, title, description, date, objId, people, subject, imgUrl, onClose) => {
+const addExhibitsSubmit = async (e, Title, Description, Date, ObjId, People, Subject, ImgUrl, onClose) => {
     e.preventDefault()
     try {
       await addDoc(collection(db, 'artifacts'), {
-        title: title,
-        description: description,
-        date: date,
-        objId:objId,
-        people: people,
-        subject: subject,
-        imgUrl: imgUrl
+        Title: Title,
+        Description: Description,
+        Date: Date,
+        ObjId: ObjId,
+        People: People,
+        Subject: Subject,
+        ImgUrl: ImgUrl
 
       })
 
@@ -42,7 +42,7 @@ const addExhibitsSubmit = async (e, title, description, date, objId, people, sub
           <input 
             type='text' 
             name='title' 
-            onChange={(e) => setTitle(e.target.value.toUpperCase())} 
+            onChange={(e) => setTitle(e.target.value)} 
             value={title}
             placeholder='Enter Name'/>
           <textarea 
@@ -51,34 +51,36 @@ const addExhibitsSubmit = async (e, title, description, date, objId, people, sub
             value={description}> 
             </textarea>
           <textarea 
-            type='text' 
             name='Date' 
             onChange={(e) => setDate(e.target.value)} 
             value={date}
             placeholder='Enter date'></textarea>
+            
             <textarea 
-            type='text' 
             name='Object ID' 
             onChange={(e) => setObjId(e.target.value)} 
-            value={date}
+            value={ObjId}
             placeholder='Enter Object ID'></textarea>
+
             <textarea 
             type='text' 
             name='people' 
             onChange={(e) => setPeople(e.target.value)} 
-            value={date}
+            value={people}
             placeholder='Enter Names of People'></textarea>
+
             <textarea 
             type='text' 
             name='subjects' 
             onChange={(e) => setSubject(e.target.value)} 
-            value={date}
+            value={subject}
             placeholder='Enter the Subject'></textarea>
+
             <textarea 
             type='text' 
             name='imgUrls' 
             onChange={(e) => setImgurl(e.target.value)} 
-            value={date}
+            value={imgUrl}
             placeholder='Enter the Valid Image URLs'></textarea>
           <button type='submit'>Add</button>
         </form> 

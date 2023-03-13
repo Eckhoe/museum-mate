@@ -29,11 +29,11 @@ function Modal({open, modalLable, children, custom_modal, onClose}) {
     return null
   }
 
-  function Edit({open, onClose, toEditTitle, toEditDescription, id}) {
+  function Edit({open, onClose, toEditTitle, toEditDescription, toEditDate, id}) {
 
     const [title, setTitle] = useState(toEditTitle)
     const [description, setDescription] = useState(toEditDescription)
-  
+    const [date, setDate] = useState(toEditDate)
     /* function to update document in firestore */
   
     return (
@@ -41,10 +41,11 @@ function Modal({open, modalLable, children, custom_modal, onClose}) {
         <form className='edit' name='update'>
           <input 
             type='text' 
-            name='title' 
+            name='Hello' 
             onChange={(e) => setTitle(e.target.value)} 
             value={title}/>
           <textarea onChange={(e) => setDescription(e.target.value)} value={description}></textarea>
+
           <button type='submit'>Edit</button>
         </form> 
       </Modal>
