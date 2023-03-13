@@ -1,9 +1,18 @@
+import {
+    ConfirmLocation,
+    RemoveLines,
+    LevenshteinDistance,
+    _queryPrefix,
+    _directionPrefix, _museumInfo,
+    _conTypeExamples, _exhibitInfo,
+    _locIdentExamples, _musIdentExamples,
+    _startPrompt
+} from "./ChatbotHelper";
 import React, { useEffect, useRef, useState } from "react";
 import { GenerateBasic, GenerateChat } from "./GPT-3";
-import { _queryPrefix, _directionPrefix, _museumInfo, _conTypeExamples, _exhibitInfo, _locIdentExamples, _musIdentExamples, _startPrompt } from "./InputData";
+import { LanguageSelector, Loading } from "./Components"
 import "./App.css";
-import "./ChatBot.css";
-import {LanguageSelector, Loading} from "./Components";
+import "./ChatBot.css";;
 
 /* This class implements the MuseumMate chatbot using calls to GPT-3 for text generation and React JS for I/O */
 // Global variables
@@ -57,23 +66,23 @@ const Text = ({ text, onTextClick }) => {
                         <>
                             <div className="text-content">{text.content}</div>
                             {text.video ? (
-                                <iframe height="315" src={"https://www.youtube.com/embed/"+text.video+"?autoplay=1"}
-                                        title="YouTube video player"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                        allowFullScreen>
+                                <iframe height="315" src={"https://www.youtube.com/embed/" + text.video + "?autoplay=1"}
+                                    title="YouTube video player"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowFullScreen>
                                 </iframe>
                             ) : (
                                 <></>
                             )}
-                            <img className="text-image" src={text.image} alt="Displayed image from database here"/>
+                            <img className="text-image" src={text.image} alt="Displayed image from database here" />
                         </>
                     ) : (
                         <>
                             {text.video ? (
-                                <iframe height="315" src={"https://www.youtube.com/embed/"+text.video+"?autoplay=1"}
-                                        title="YouTube video player"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                        allowFullScreen>
+                                <iframe height="315" src={"https://www.youtube.com/embed/" + text.video + "?autoplay=1"}
+                                    title="YouTube video player"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowFullScreen>
                                 </iframe>
                             ) : (
                                 <></>
@@ -97,7 +106,6 @@ export const Chatbot = () => {
     // @videoOutput contains the end ending url segment of video from youtube or database
     const imageOutput = "/image1.jpg";
     const videoOutput = "elp6ZktpQ1c"; //war of 1812 link
-    //
 
     // Output the intro
     const [text, setText] = useState([{ content: startPrompt, sender: "MuseumMate", image: null, video: null }]);
@@ -120,89 +128,13 @@ export const Chatbot = () => {
             return;
         }
 
-        // Get user input
+        // Get user input and check the conversation type
         const temp = [...text, { content: input, sender: "Guest" }];
-
-        // Check the conversation type
-        let conType = await GenerateBasic(model, "Indicate if input is asking for directions. Reply Yes, No or Other.\n" + conTypeExamples + "Input: " + input + "\nOutput:");
-        isDirections = conType.includes("Yes") ? true : false;
-        setLoading(true); //loading animation starts
-
-        // Determine the conversation we are having
-        if (isDirections) {
-            // Add user intput to the prompt
-            directionPrefix = directionPrefix + input;
-
-            // Use GPT-3 to find the starting and ending locations within the user input and confirm them (i.e., spelling issues)
-            let departure = await GenerateBasic(model, "Return just the departure point from the following text: " + input);
-            departure = await ConfirmLocation(locations, departure, locIdentExamples);
-            departure = RemoveLines(departure);
-            let destination = await GenerateBasic(model, "Return just the destination point from the following text: " + input);
-            destination = await ConfirmLocation(locations, destination, locIdentExamples);
-            destination = RemoveLines(destination);
-
-            let curDirect = "";
-            // Ensure you get the start and endpoints
-            if (locations.includes(departure) && locations.includes(destination)) {
-                // TO DO: Output the points to the path finding algorithm and recieve the directions
-                // Note: The code below is temporary to test the directions, replace later.
-                const tempDirections = ["right(King Tut Exhibit), left, straight, right, straight, left(Security Office)",
-                    "straight, right, left, upstairs, right(Ancient Greek Exhibit), downstairs(Dinosaur Exhibit)",
-                    "left(Restroom), straight, right, straight(Lobby)"];
-                const direction = tempDirections[Math.floor(Math.random() * tempDirections.length)];
-                curDirect = directionPrefix + direction;
-            }
-            else {
-                curDirect = "Rephrase this: I'm sorry! I couldn't quite figure out where you are and where you are going (some circuits must have crossed). Can you please let me know your current location and where you are trying to go?"
-            }
-
-            // Use GPT-3 to translate the directions into plain text
-            let answer = await GenerateBasic(model, curDirect);
-            directionPrefix = directionPrefix + answer;
-            if (lang != "english") {
-                answer = await GenerateBasic(model, "Translate the following text into " + lang + ": " + answer);
-            }
-            setLoading(false)  // Loading animation ends
-            setText([...temp, { content: `${answer}`, sender: "MuseumMate", image: null, video: null }]);
-        }
-        else {
-            // Add user intput to the prompt
-            queryPrefix = queryPrefix + input;
-
-            // Use GPT-3 to extract the subject of the conversation
-            let subject = await ConfirmLocation(exhibits, input, locIdentExamples);
-
-            // Supply information to for the chatbot
-            // If the subject is an exhibit then give exhibit information, if it is about the museum then give specific museum info, else just chat (i.e., info = "")
-            let information = "";
-            if (exhibits.includes(subject)) {
-                exhibitInfo.forEach(index => {
-                    if (subject.includes(index[0])) {
-                        information = index[1];
-                    }
-                })
-            }
-            else if (subject.includes("Other")) {
-                // This is the same variable extraction as above but for specific museum info from the input
-                // This stops the chatbot from overoutputting information that wasn't explicitly asked
-                subject = await ConfirmLocation(museumTopics, input, musIdentExamples);
-                museumInfo.forEach(index => {
-                    if (subject.includes(index[0])) {
-                        information = index[1];
-                    }
-                })
-            }
-
-            // Generate an output
-            let answer = await GenerateChat(model, queryPrefix, information, start, restart, stop + ".");
-            queryPrefix = answer[1];
-            if (lang != "english") {
-                answer[0] = await GenerateBasic(model, "Translate the following text into " + lang + ": " + answer[0]);
-            }
-            setLoading(false)  //loading animation ends
-            setText([...temp, { content: `${answer[0]}`, sender: "MuseumMate", image: null, video: null }]);
-        }
+        setLoading(true); // Loading animation starts
+        let answer = await chat(input);
+        setText([...temp, { content: `${answer}`, sender: "MuseumMate", image: null, video: null }]);
         setInput(""); // Remove user text and reset text input field to default
+        setLoading(false); // Loading animation ends
     }
 
     // Fully reset the chatbot text list
@@ -278,6 +210,7 @@ export const Chatbot = () => {
 
     const handleLanguageChange = (language) => {
         setLanguage(language);
+        lang = language
     };
 
     return (
@@ -287,7 +220,7 @@ export const Chatbot = () => {
 
                     <div className="chatbot-components">
                         <div className="chatbot-header">
-                            <LanguageSelector onlanguagechange={handleLanguageChange}/>
+                            <LanguageSelector onlanguagechange={handleLanguageChange} />
                             <h1 className="chatbot-title">ChatBot</h1>
                             <button onClick={() => setToggle(false)}>Minimize</button>
                         </div>
@@ -341,19 +274,87 @@ export const Chatbot = () => {
 
 };
 
-// This method uses GPT-3 to confirm a natural language input against a set list of data. It requires the set list, input, and a string of training data
-export const ConfirmLocation = async (list, inputText, exampleData) => {
-    inputText = RemoveLines(inputText);
-    const prompt = "Return closest match to the Input from the List. If no match is found, return other." + "\nList: " + list.join(', ') +
-        "\n" + exampleData + "Input: " + inputText + "\nOutput:";
-    const temp = await GenerateBasic(model, prompt);
-    return temp;
-}
+/*
+* This method contains the main chatbot logic and is called whenever submit is pressed
+*/
+export const chat = async (input) => {
+    // Local variables
+    let answer = "";
 
-// This method uses GPT-3 to remove unnecessary white spaces from GPT generated responses
-export const RemoveLines = (inputText) => {
-    let temp = inputText.replace(/[\n\r]/g, '');
-    return temp
+    // Indicate the type of conversation
+    let conType = await GenerateBasic(model, "Indicate if input is asking for directions. Reply Yes, No or Other.\n" + conTypeExamples + "Input: " + input + "\nOutput:");
+    isDirections = conType.includes("Yes") ? true : false;
+
+    if (isDirections) {
+        // Add user intput to the prompt
+        directionPrefix = directionPrefix + input;
+
+        // Use GPT-3 to find the starting and ending locations within the user input and confirm them (i.e., spelling issues)
+        let departure = await GenerateBasic(model, "Return just the departure point from the following text: " + input);
+        departure = await ConfirmLocation(locations, departure, locIdentExamples);
+        departure = RemoveLines(departure);
+        let destination = await GenerateBasic(model, "Return just the destination point from the following text: " + input);
+        destination = await ConfirmLocation(locations, destination, locIdentExamples);
+        destination = RemoveLines(destination);
+
+        let curDirect = "";
+        // Ensure you get the start and endpoints
+        if (locations.includes(departure) && locations.includes(destination)) {
+            // TO DO: Output the points to the path finding algorithm and recieve the directions
+            // Note: The code below is temporary to test the directions, replace later.
+            const tempDirections = ["right(King Tut Exhibit), left, straight, right, straight, left(Security Office)",
+                "straight, right, left, upstairs, right(Ancient Greek Exhibit), downstairs(Dinosaur Exhibit)",
+                "left(Restroom), straight, right, straight(Lobby)"];
+            const direction = tempDirections[Math.floor(Math.random() * tempDirections.length)];
+            curDirect = directionPrefix + direction;
+        }
+        else {
+            curDirect = "Rephrase this: I'm sorry! I couldn't quite figure out where you are and where you are going (some circuits must have crossed). Can you please let me know your current location and where you are trying to go?"
+        }
+
+        // Use GPT-3 to translate the directions into plain text
+        answer = await GenerateBasic(model, curDirect);
+        directionPrefix = directionPrefix + answer;
+    }
+    else {
+        // Add user intput to the prompt
+        queryPrefix = queryPrefix + input;
+
+        // Use GPT-3 to extract the subject of the conversation
+        let subject = await ConfirmLocation(exhibits, input, locIdentExamples);
+
+        let test = LevenshteinDistance("Cat", "Dog");
+
+        // Supply information to for the chatbot about artifact
+        // TODO: Find info using a Fuzzy String Search
+        let information = "";
+        if (exhibits.includes(subject)) {
+            exhibitInfo.forEach(index => {
+                if (subject.includes(index[0])) {
+                    information = index[1];
+                }
+            })
+        }
+        else if (subject.includes("Other")) {
+            // TODO: Add database quuery for museum info
+            subject = await ConfirmLocation(museumTopics, input, musIdentExamples);
+            museumInfo.forEach(index => {
+                if (subject.includes(index[0])) {
+                    information = index[1];
+                }
+            })
+        }
+
+        answer = await GenerateChat(model, queryPrefix, information, start, restart, stop + ".");
+        queryPrefix = answer[1];
+        answer = answer[0];
+    }
+
+    // Generate an output
+    if (lang != "English") {
+        answer = await GenerateBasic(model, "Translate the following text into " + lang + ": " + answer);
+    }
+    return answer;
 }
 
 export default Chatbot;
