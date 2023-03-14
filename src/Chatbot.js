@@ -163,13 +163,13 @@ export const Chatbot = () => {
         setLoading(true); // Loading animation starts
         let answer = await chat(input);
         setText([...temp, { content: `${answer[0]}`, sender: "MuseumMate", image: answer[1], video: null }]);
-        setReply(answer);
+        setReply(answer[0]);
         console.log(reply);
         setInput(""); // Remove user text and reset text input field to default
         setLoading(false); // Loading animation ends
         //TTS if on
         if (ttsOn) {
-            speak({ text: answer });
+            speak({ text: answer[0] });
         }
     }
 
