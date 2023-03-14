@@ -162,14 +162,14 @@ export const Chatbot = () => {
         const temp = [...text, { content: input, sender: "Guest" }];
         setLoading(true); // Loading animation starts
         let answer = await chat(input);
-        setText([...temp, { content: `${answer}`, sender: "MuseumMate", image: null, video: null }]);
+        setText([...temp, { content: `${answer[0]}`, sender: "MuseumMate", image: answer[1], video: null }]);
         setReply(answer);
         console.log(reply);
         setInput(""); // Remove user text and reset text input field to default
         setLoading(false); // Loading animation ends
         //TTS if on
         if (ttsOn) {
-            speak({text:answer});
+            speak({ text: answer });
         }
     }
 
@@ -179,7 +179,7 @@ export const Chatbot = () => {
         setText([{ content: startPrompt, sender: "MuseumMate" }])
         setReply(startPrompt);
         if (ttsOn) {
-            speak({text:startPrompt});
+            speak({ text: startPrompt });
         }
     }
 
@@ -214,16 +214,16 @@ export const Chatbot = () => {
     }, []);
 
     // Accessibility below
-// Text-to-speech
+    // Text-to-speech
     const handleTTS = () => {
         //speak({text:reply});
         // enable auto TTS
         if (ttsOn) {
 
             toggleTTS(false);
-        }else{
+        } else {
             toggleTTS(true);
-            speak({text:reply});
+            speak({ text: reply });
         };
         console.log(ttsOn)
     };
@@ -331,11 +331,13 @@ export const Chatbot = () => {
 export const chat = async (input) => {
     // Local variables
     let answer = "";
+    let photo = "";
+    let response = [];
 
     // Indicate the type of conversation
     let conType = await GenerateBasic(model, "Reply Yes if the following input is asking for direction or No if it is not:\n"
         + conTypeExamples + "Input: " + input + "\nOutput:");
-    isDirections = conType.includes("Yes") ? true : false;
+    isDirections = false;
 
     if (isDirections) {
         // Add user intput to the prompt
@@ -374,7 +376,7 @@ export const chat = async (input) => {
         chatLog = chatLog + input;
 
         // Use GPT-3 to extract the subject of the conversation
-        let subject = await GenerateBasic(model, "Determine the subject or category of the provided text. The input prompts can be in the form of a question or statement, and the model should respond with the most appropriate subject or category. Examples of valid input prompts and their corresponding outputs are:\n" 
+        let subject = await GenerateBasic(model, "Determine the subject or category of the provided text. The input prompts can be in the form of a question or statement, and the model should respond with the most appropriate subject or category. Examples of valid input prompts and their corresponding outputs are:\n"
             + subIdentExamples + "Prompt: " + input + "Output:");
         let min = Infinity;
         let information = "";
@@ -387,12 +389,14 @@ export const chat = async (input) => {
             }
         })
 
+        // If we aren't then run the database code
         if (information == "") {
             // Search the database for the closest matching GPTName to the user input and store the data in a 2Darray
             const querySnapshot = await getDocs(artifactRef);
             querySnapshot.forEach((doc) => {
                 let GPTName = doc.data().GPTName;
                 let Desc = doc.data().Description;
+                console.log(doc.data().Id);
 
                 // Use Levenshtein Distance to get a number metric for the closeness of string to the input and record the description
                 temp = CalcSim(subject, GPTName);
@@ -401,6 +405,7 @@ export const chat = async (input) => {
                 if (temp < min) {
                     min = temp;
                     information = Desc;
+                    photo = doc.data().images[0];
                 }
             });
         }
@@ -414,7 +419,8 @@ export const chat = async (input) => {
     if (lang != "English") {
         answer = await GenerateBasic(model, "Translate the following text into " + lang + ": " + answer);
     }
-    return answer;
+    response = [answer, photo];
+    return response;
 }
 
 export default Chatbot;
