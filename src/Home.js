@@ -49,7 +49,7 @@ const Home = () => {
                                     <td>1pm - 5pm</td>
                                 </tr>
                                 <tr>
-                                    <t>Wednesday</t>
+                                    <td>Wednesday</td>
                                     <td>1pm - 5pm</td>
                                 </tr>
                                 <tr>
@@ -76,8 +76,7 @@ const Home = () => {
                     <div className="row">
                         <div className="text"> Possible museum twitter feed</div>
                         <div className="text">
-                            <p>43 Castlereagh St, Niagara-on-the-Lake, ON L0S 1J0
-                                (maybe add map)</p>
+                            <p>43 Castlereagh St, Niagara-on-the-Lake, ON L0S 1J0 (maybe add map)</p>
                             <p>Phone: (905) 468-3912</p>
                             <p>Email: contact@nhsm.ca</p>
                         </div>

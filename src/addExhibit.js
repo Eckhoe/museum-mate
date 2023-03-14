@@ -47,7 +47,7 @@ const addExhibitsSubmit = async (e, Title, Description, Date, ObjId, People, Sub
             placeholder='Enter Name'/>
           <textarea 
             onChange={(e) => setDescription(e.target.value)}
-            placeholder='Enter exhibit decription'
+            placeholder='Enter exhibit description'
             value={description}> 
             </textarea>
           <textarea 

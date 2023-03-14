@@ -1,23 +1,50 @@
 import {
     ConfirmLocation,
     RemoveLines,
-    LevenshteinDistance,
+    CalcSim,
     _queryPrefix,
-    _directionPrefix, _museumInfo,
-    _conTypeExamples, _exhibitInfo,
-    _locIdentExamples, _musIdentExamples,
-    _startPrompt
+    _directionPrefix,
+    _museumInfo,
+    _musIdentExamples,
+    _conTypeExamples,
+    _subIdentExamples,
+    _startPrompt,
 } from "./ChatbotHelper";
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import React, { useEffect, useRef, useState } from "react";
+import { LanguageSelector, Loading } from "./Components";
 import { GenerateBasic, GenerateChat } from "./GPT-3";
-import "./App.css";
+import { useSpeechSynthesis } from 'react-speech-kit'
 import "./ChatBot.css";
-import {LanguageSelector, Loading} from "./Components";
-import SpeechRecognition , {useSpeechRecognition} from 'react-speech-recognition';
-import {useSpeechSynthesis} from 'react-speech-kit'
-/* This class implements the MuseumMate chatbot using calls to GPT-3 for text generation and React JS for I/O */
+import "./App.css";
+import { db } from './Firebase';
+import { collection, query, where, getDocs, doc } from 'firebase/firestore';
+
+// Separate import of firebase database to get chatbot code working
+/* import * as firebase from "firebase/app";
+import "firebase/database";
+const firebaseConfig = {
+    apiKey: "AIzaSyDXd3SXujiOC-0iYxe4E0gg2pfv5NUJaWI",
+    authDomain: "museummate-e06b8.firebaseapp.com",
+    databaseURL: "https://museummate-e06b8-default-rtdb.firebaseio.com",
+    projectId: "museummate-e06b8",
+    storageBucket: "museummate-e06b8.appspot.com",
+    messagingSenderId: "607698800264",
+    appId: "1:607698800264:web:4c20dd01fe7e9ededcd93d",
+    measurementId: "G-JW69LNL7LD"
+};
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database(); */
+
+/* 
+ * This class implements the MuseumMate chatbot using calls to GPT-3 for text generation and React JS for I/O 
+ */
 // Global variables
-// TO DO: Change these variables to the final exhibits being used. Also update directionPrefix.
+const museumInfo = _museumInfo;
+const startPrompt = _startPrompt;
+const conTypeExamples = _conTypeExamples;
+const subIdentExamples = _subIdentExamples;
+const musIdentExamples = _musIdentExamples;
 const locations = ["Lobby", "Restroom", "Security Office", "Dinosaur Exhibit", "King Tut Exhibit", "Ancient Greek Exhibit"];
 const exhibits = ["Dinosaur Exhibit", "King Tut Exhibit", "Ancient Greek Exhibit"];
 const museumTopics = ["MuseumMate", "Niagara on the Lake (NOTL) Museum", "Operating Hours", "Address", "Contact", "Facilities"];
@@ -25,16 +52,12 @@ const model = "text-davinci-003";
 const restart = "\nGuest: ";
 const start = "\nMuseumMate:";
 const stop = [" Guest:", " MuseumMate:"];
-const museumInfo = _museumInfo;
-const conTypeExamples = _conTypeExamples;
-const exhibitInfo = _exhibitInfo;    // TO DO: Query database for information on topics. DON'T FORGET TO UPDATE InputData.JS.
-const locIdentExamples = _locIdentExamples;
-const musIdentExamples = _musIdentExamples;
-const startPrompt = _startPrompt;
-let isDirections = false;
+const artifactRef = collection(db, "artifacts");
 let directionPrefix = _directionPrefix;
 let queryPrefix = _queryPrefix;
+let isDirections = false;
 let lang = "English";
+let chatLog = "MuseumMate: Hi! I am MuseumMate and I can provide information on all the exhibits around you as well as directions to anywhere in the museum!\nGuest:";
 
 
 // Message component
@@ -99,14 +122,13 @@ const Text = ({ text, onTextClick }) => {
 
 // Main chatbot component
 export const Chatbot = () => {
-    // Set the intitial output to match the type of conversation that is happening
     const [input, setInput] = useState("");
     //Hook for variable use to capture speech to text
-    const {transcript}= useSpeechRecognition();
+    const { transcript } = useSpeechRecognition();
     //Hook for variable use to capture text to speech
-    const{speak}=useSpeechSynthesis();
+    const { speak } = useSpeechSynthesis();
     //use state for variable use to capture text to speech
-    const [reply, setReply] = useState("");
+    const [reply, setReply] = useState(startPrompt);
 
     // video/image that is added to chabot reply text through setText
     // @imageOutput contains an image pulled from the database or a url link
@@ -127,10 +149,10 @@ export const Chatbot = () => {
 
     // Set loading
     const [isLoading, setLoading] = useState(false);
-    
+
     // On enter add input to text list for display, get chatbot response and add to list as well
     const handleSubmit = async (event) => {
-        
+
         event.preventDefault();
         if (input.trim() === "") {
             return;
@@ -141,16 +163,24 @@ export const Chatbot = () => {
         setLoading(true); // Loading animation starts
         let answer = await chat(input);
         setText([...temp, { content: `${answer}`, sender: "MuseumMate", image: null, video: null }]);
-        setReply(answer) ;
+        setReply(answer);
         console.log(reply);
         setInput(""); // Remove user text and reset text input field to default
         setLoading(false); // Loading animation ends
+        //TTS if on
+        if (ttsOn) {
+            speak({text:answer});
+        }
     }
 
-    // Fully reset the chatbot text list
+    // Fully reset the chatbot text list and TTS
     const handleReset = () => {
         setText([]);
         setText([{ content: startPrompt, sender: "MuseumMate" }])
+        setReply(startPrompt);
+        if (ttsOn) {
+            speak({text:startPrompt});
+        }
     }
 
     // Chatbot popup toggle
@@ -184,10 +214,22 @@ export const Chatbot = () => {
     }, []);
 
     // Accessibility below
-    // Text-to-speech
+// Text-to-speech
     const handleTTS = () => {
-        speak({text:reply});
-    }
+        //speak({text:reply});
+        // enable auto TTS
+        if (ttsOn) {
+
+            toggleTTS(false);
+        }else{
+            toggleTTS(true);
+            speak({text:reply});
+        };
+        console.log(ttsOn)
+    };
+
+    // toggle automatic text-to-speech on/off
+    const [ttsOn, toggleTTS] = useState(false);
 
     // Speech-to-text
     useEffect(() => {
@@ -217,7 +259,6 @@ export const Chatbot = () => {
     // selected language for user-chabot interaction
     // @language contains the currently selected language from the chatbot drop down menu
     const [language, setLanguage] = useState("English");
-
     const handleLanguageChange = (language) => {
         setLanguage(language);
         lang = language
@@ -263,11 +304,11 @@ export const Chatbot = () => {
                                 <button className="chatbot-button" type="reset">
                                     Reset
                                 </button>
-                                <button onClick={SpeechRecognition.startListening} >
-                                Mic Start
+                                <button className="chatbot-button" type="button" onClick={SpeechRecognition.startListening} >
+                                    Mic Start
                                 </button>
-                                <button onClick={handleTTS}>
-                                Speak
+                                <button className={ttsOn ? "chatbot-button-on" : "chatbot-button"} type="button" onClick={handleTTS}>
+                                    {ttsOn ? "Speech off" : "Speech on"}
                                 </button>
                             </form>
                         </div>
@@ -292,14 +333,16 @@ export const chat = async (input) => {
     let answer = "";
 
     // Indicate the type of conversation
-    let conType = await GenerateBasic(model, "Indicate if input is asking for directions. Reply Yes, No or Other.\n" + conTypeExamples + "Input: " + input + "\nOutput:");
+    let conType = await GenerateBasic(model, "Reply Yes if the following input is asking for direction or No if it is not:\n"
+        + conTypeExamples + "Input: " + input + "\nOutput:");
     isDirections = conType.includes("Yes") ? true : false;
 
     if (isDirections) {
         // Add user intput to the prompt
-        directionPrefix = directionPrefix + input;
+        chatLog = chatLog + input;
 
         // Use GPT-3 to find the starting and ending locations within the user input and confirm them (i.e., spelling issues)
+        // TODO: Change example data
         let departure = await GenerateBasic(model, "Return just the departure point from the following text: " + input);
         departure = await ConfirmLocation(locations, departure, locIdentExamples);
         departure = RemoveLines(departure);
@@ -324,39 +367,46 @@ export const chat = async (input) => {
 
         // Use GPT-3 to translate the directions into plain text
         answer = await GenerateBasic(model, curDirect);
-        directionPrefix = directionPrefix + answer;
+        chatLog = chatLog + answer;
     }
     else {
         // Add user intput to the prompt
-        queryPrefix = queryPrefix + input;
+        chatLog = chatLog + input;
 
         // Use GPT-3 to extract the subject of the conversation
-        let subject = await ConfirmLocation(exhibits, input, locIdentExamples);
-
-        let test = LevenshteinDistance("Cat", "Dog");
-
-        // Supply information to for the chatbot about artifact
-        // TODO: Find info using a Fuzzy String Search
+        let subject = await GenerateBasic(model, "Determine the subject or category of the provided text. The input prompts can be in the form of a question or statement, and the model should respond with the most appropriate subject or category. Examples of valid input prompts and their corresponding outputs are:\n" 
+            + subIdentExamples + "Prompt: " + input + "Output:");
+        let min = Infinity;
         let information = "";
-        if (exhibits.includes(subject)) {
-            exhibitInfo.forEach(index => {
-                if (subject.includes(index[0])) {
-                    information = index[1];
+
+        let temp = await ConfirmLocation(museumTopics, input, musIdentExamples);
+        // First check if they are asking about the museum
+        museumInfo.forEach(index => {
+            if (temp.includes(index[0])) {
+                information = index[1];
+            }
+        })
+
+        if (information == "") {
+            // Search the database for the closest matching GPTName to the user input and store the data in a 2Darray
+            const querySnapshot = await getDocs(artifactRef);
+            querySnapshot.forEach((doc) => {
+                let GPTName = doc.data().GPTName;
+                let Desc = doc.data().Description;
+
+                // Use Levenshtein Distance to get a number metric for the closeness of string to the input and record the description
+                temp = CalcSim(subject, GPTName);
+
+                // We want the smallest value, meaning closest
+                if (temp < min) {
+                    min = temp;
+                    information = Desc;
                 }
-            })
-        }
-        else if (subject.includes("Other")) {
-            // TODO: Add database quuery for museum info
-            subject = await ConfirmLocation(museumTopics, input, musIdentExamples);
-            museumInfo.forEach(index => {
-                if (subject.includes(index[0])) {
-                    information = index[1];
-                }
-            })
+            });
         }
 
-        answer = await GenerateChat(model, queryPrefix, information, start, restart, stop + ".");
-        queryPrefix = answer[1];
+        answer = await GenerateChat(model, queryPrefix + "\nSource Material: " + information + "\n" + chatLog, start, restart, stop + ".");
+        chatLog += answer[1];
         answer = answer[0];
     }
 
