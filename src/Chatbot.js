@@ -128,7 +128,7 @@ export const Chatbot = () => {
     //Hook for variable use to capture text to speech
     const { speak } = useSpeechSynthesis();
     //use state for variable use to capture text to speech
-    const [reply, setReply] = useState("");
+    const [reply, setReply] = useState(startPrompt);
 
     // video/image that is added to chabot reply text through setText
     // @imageOutput contains an image pulled from the database or a url link
@@ -167,12 +167,20 @@ export const Chatbot = () => {
         console.log(reply);
         setInput(""); // Remove user text and reset text input field to default
         setLoading(false); // Loading animation ends
+        //TTS if on
+        if (ttsOn) {
+            speak({text:answer});
+        }
     }
 
-    // Fully reset the chatbot text list
+    // Fully reset the chatbot text list and TTS
     const handleReset = () => {
         setText([]);
         setText([{ content: startPrompt, sender: "MuseumMate" }])
+        setReply(startPrompt);
+        if (ttsOn) {
+            speak({text:startPrompt});
+        }
     }
 
     // Chatbot popup toggle
@@ -206,10 +214,22 @@ export const Chatbot = () => {
     }, []);
 
     // Accessibility below
-    // Text-to-speech
+// Text-to-speech
     const handleTTS = () => {
-        speak({ text: reply });
-    }
+        //speak({text:reply});
+        // enable auto TTS
+        if (ttsOn) {
+
+            toggleTTS(false);
+        }else{
+            toggleTTS(true);
+            speak({text:reply});
+        };
+        console.log(ttsOn)
+    };
+
+    // toggle automatic text-to-speech on/off
+    const [ttsOn, toggleTTS] = useState(false);
 
     // Speech-to-text
     useEffect(() => {
@@ -284,11 +304,11 @@ export const Chatbot = () => {
                                 <button className="chatbot-button" type="reset">
                                     Reset
                                 </button>
-                                <button onClick={SpeechRecognition.startListening} >
+                                <button className="chatbot-button" type="button" onClick={SpeechRecognition.startListening} >
                                     Mic Start
                                 </button>
-                                <button onClick={handleTTS}>
-                                    Speak
+                                <button className={ttsOn ? "chatbot-button-on" : "chatbot-button"} type="button" onClick={handleTTS}>
+                                    {ttsOn ? "Speech off" : "Speech on"}
                                 </button>
                             </form>
                         </div>

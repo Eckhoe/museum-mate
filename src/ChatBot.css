@@ -159,3 +159,10 @@ iframe {
 .text-content {
     white-space: pre-wrap;
 }
+
+/* tts on/off */
+.chatbot-button-on {
+    padding: 15px;
+    margin: 5px;
+    box-shadow: 0 0 20px #0df80d;
+}
