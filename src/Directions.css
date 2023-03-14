@@ -1,0 +1,27 @@
+.directions {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    margin-top: 70px;
+}
+
+.directions-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.directions-header{
+    padding: 10px;
+}
+.map-image{
+    width: 60%;
+    height: 100%;
+    border: 2px solid white;
+}
+
+.chatbot-map-text{
+    width: 40%;
+    height: 100%;
+    border: 2px solid white;
+    margin-left: 15px;
+}
