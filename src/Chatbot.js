@@ -315,7 +315,7 @@ export const chat = async (input) => {
     // Indicate the type of conversation
     let conType = await GenerateBasic(model, "Reply Yes if the following input is asking for direction or No if it is not:\n"
         + conTypeExamples + "Input: " + input + "\nOutput:");
-    isDirections = conType.includes("Yes") ? true : false;
+    isDirections = false;
 
     if (isDirections) {
         // Add user intput to the prompt
@@ -367,12 +367,14 @@ export const chat = async (input) => {
             }
         })
 
+        // If we aren't then run the database code
         if (information == "") {
             // Search the database for the closest matching GPTName to the user input and store the data in a 2Darray
             const querySnapshot = await getDocs(artifactRef);
             querySnapshot.forEach((doc) => {
                 let GPTName = doc.data().GPTName;
                 let Desc = doc.data().Description;
+                console.log(doc.data().Id);
 
                 // Use Levenshtein Distance to get a number metric for the closeness of string to the input and record the description
                 temp = CalcSim(subject, GPTName);
@@ -382,7 +384,7 @@ export const chat = async (input) => {
                     min = temp;
                     information = Desc;
                 }
-            });
+            }); 
         }
 
         answer = await GenerateChat(model, queryPrefix + "\nSource Material: " + information + "\n" + chatLog, start, restart, stop + ".");

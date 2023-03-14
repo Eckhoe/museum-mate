@@ -3,11 +3,14 @@ import {collection, addDoc, Timestamp} from 'firebase/firestore'
 import React, { useState } from 'react';
 import './addExhibit.css'
 import Modal from "./Modal"
+import { GenerateBasic } from './GPT-3';
 
 
 const addExhibitsSubmit = async (e, Title, Description, Date, ObjId, People, Subject, ImgUrl, onClose) => {
     e.preventDefault()
     try {
+      let values = Title+"\n"+Description+"\n"+Date+"\n"+Subject;
+      let GPTName = await GenerateBasic("text-davinci-003", "Generate a 2-8 word subject to encapsualte the following information:\n"+"//\n"+values+"\n//\n");
       await addDoc(collection(db, 'artifacts'), {
         Title: Title,
         Description: Description,
@@ -15,8 +18,8 @@ const addExhibitsSubmit = async (e, Title, Description, Date, ObjId, People, Sub
         ObjId: ObjId,
         People: People,
         Subject: Subject,
-        ImgUrl: ImgUrl
-
+        ImgUrl: ImgUrl,
+        GPTName: GPTName
       })
 
       onClose()
