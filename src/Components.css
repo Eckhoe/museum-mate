@@ -229,3 +229,56 @@ a{
     color: white;
     width: 80px;
 }
+
+/* photograph */
+.photograph-images {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    position: relative;
+}
+
+.image-stack {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 300px;
+    height: 300px;
+    transition: all 0.5s ease-in-out;
+}
+
+.image.active {
+    z-index: 1;
+}
+
+.image:nth-of-type(1) {
+    transform: rotate(-10deg);
+}
+
+.image:nth-of-type(2) {
+    transform: rotate(0deg);
+}
+
+.image:nth-of-type(3) {
+    transform: rotate(10deg);
+}
+
+.image-text {
+    z-index: 2;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    max-width: 400px;
+    text-align: center;
+}
+
+.image-text h2 {
+    margin-top: 0;
+}

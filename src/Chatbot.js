@@ -21,7 +21,7 @@ import "./ChatBot.css";
 import "./App.css";
 import { db } from "./Firebase";
 import { collection, query, where, getDocs, doc } from "firebase/firestore";
-import $ from "jquery";
+//import $ from "jquery";
 
 // Separate import of firebase database to get chatbot code working
 /* import * as firebase from "firebase/app";
@@ -285,11 +285,13 @@ export const Chatbot = () => {
     setInput(transcript);
   }, [transcript]);
 
-  // Sets chatbot popup default to active if on chatbot page
+// Sets chatbot popup default to active if on chatbot page
+  //test: if (currentUrl === "http://localhost:3000/chatbot") {
+  //live: if (currentUrl === "http://museum-mate-v1.vercel.app") {
   useEffect(() => {
     const currentUrl = window.location.href;
     //console.log(currentUrl);
-    if (currentUrl === "http://localhost:3000/chatbot") {
+    if (currentUrl === "http://museum-mate-v1.vercel.app") {
       setToggle(true);
     }
   }, []);
@@ -314,69 +316,66 @@ export const Chatbot = () => {
   };
 
   return (
-    <div>
-      {toggleOn ? (
-        <div className="chatbot">
-          <div className="chatbot-components">
-            <div className="chatbot-header">
-              <LanguageSelector onlanguagechange={handleLanguageChange} />
-              <h1 className="chatbot-title">ChatBot</h1>
-              <button onClick={() => setToggle(false)}>Minimize</button>
+      <div>
+        {toggleOn ? (
+            <div className="chatbot-container">
+
+              <div className="chatbot-components">
+                <div className="chatbot-header">
+                  <LanguageSelector onlanguagechange={handleLanguageChange} />
+                  <h1 className="chatbot-title">ChatBot</h1>
+                  <button onClick={() => setToggle(false)}>
+                    <img src="https://img.icons8.com/external-tanah-basah-basic-outline-tanah-basah/14/null/external-minimize-arrows-tanah-basah-basic-outline-tanah-basah-2.png" alt="Minimize"/>
+                  </button>
+                </div>
+
+                <div className="text-list">
+                  {text.map((text, index) => (
+                      <Text key={index} text={text} onTextClick={handleTextClick} />
+                  ))}
+                  <Loader />
+                  <div ref={textListEndRef}></div>
+                </div>
+
+                <div className="text-form">
+                  <form
+                      className="form-container"
+                      method="submit"
+                      onSubmit={handleSubmit}
+                      onReset={handleReset}
+                  >
+                    <input className="form-input"
+                           value={input}
+                           maxLength="100"
+                        //size="100"
+                           onChange={(event) => setInput(event.target.value)}
+                           placeholder="Enter Text..."
+                    />
+                    <button className="chatbot-button" type="submit">
+                      <img src="https://img.icons8.com/external-solidglyph-m-oki-orlando/14/null/external-Enter-basic-ui-solidglyph-m-oki-orlando.png" alt="Submit"/>
+                    </button>
+                    <button className="chatbot-button" type="reset">
+                      <img src="https://img.icons8.com/sf-black/14/null/recurring-appointment.png" alt="Reset"/>
+                    </button>
+                    <button className="chatbot-button" type="button" onClick={SpeechRecognition.startListening} >
+                      <img src="https://img.icons8.com/material-rounded/14/null/microphone.png" alt="Mic Start"/>
+                    </button>
+                    <button className={ttsOn ? "chatbot-button-on" : "chatbot-button"} type="button" onClick={handleTTS}>
+                      {ttsOn ? <img src="https://img.icons8.com/metro/14/null/no-audio.png" alt="Speech off"/>
+                          : <img src="https://img.icons8.com/metro/14/null/high-volume.png" alt="Speech on"/>}
+
+                    </button>
+                  </form>
+                </div>
+              </div>
             </div>
 
-            <div className="text-list">
-              {text.map((text, index) => (
-                <Text key={index} text={text} onTextClick={handleTextClick} />
-              ))}
-              <Loader />
-              <div ref={textListEndRef}></div>
+        ) : (
+            <div className="chatbot-toggle" onClick={() => setToggle(true)}>
+              ChatBot
             </div>
-
-            <div className="text-form">
-              <form
-                className="form-container"
-                method="submit"
-                onSubmit={handleSubmit}
-                onReset={handleReset}
-              >
-                <input
-                  className="form-input"
-                  value={input}
-                  maxLength="100"
-                  //size="100"
-                  onChange={(event) => setInput(event.target.value)}
-                  placeholder="Enter Text..."
-                />
-                <button className="chatbot-button" type="submit">
-                  Submit
-                </button>
-                <button className="chatbot-button" type="reset">
-                  Reset
-                </button>
-                <button
-                  className="chatbot-button"
-                  type="button"
-                  onClick={SpeechRecognition.startListening}
-                >
-                  Mic Start
-                </button>
-                <button
-                  className={ttsOn ? "chatbot-button-on" : "chatbot-button"}
-                  type="button"
-                  onClick={handleTTS}
-                >
-                  {ttsOn ? "Speech off" : "Speech on"}
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="chatbot-toggle" onClick={() => setToggle(true)}>
-          ChatBot
-        </div>
-      )}
-    </div>
+        )}
+      </div>
   );
 };
 

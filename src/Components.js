@@ -95,6 +95,7 @@ const PageRouter = () => {
 };
 
 //footer component for site
+//<p>Resources</p>
 const Footer = () => {
     return (
         <>
@@ -110,7 +111,7 @@ const Footer = () => {
             <div className="footer-text">
 
                 <p>Contact information</p>
-                <p>Resources</p>
+                <p>chatbot icons from https://icons8.com</p>
             </div>
         </div>
         </>
@@ -176,4 +177,55 @@ const LanguageSelector = (props) => {
     );
 };
 
-export {NavigationBar, ImageChangerComponent, PageRouter, Footer, Loading, LanguageSelector};
+//photogrpahImage
+
+
+const PhotogrpahImage = () => {
+    const IMAGES = [
+        {
+            src: '/image1.jpg',
+            alt: 'Image 1',
+            angle: -5,
+        },
+        {
+            src: '/image2.jpg',
+            alt: 'Image 2',
+            angle: 0,
+        },
+        {
+            src: '/image3.jpg',
+            alt: 'Image 3',
+            angle: 5,
+        },
+    ];
+
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setActiveIndex((activeIndex + 1) % IMAGES.length);
+        }, 5000);
+        return () => clearInterval(interval);
+    }, [activeIndex]);
+
+    const { src, alt, angle } = IMAGES[activeIndex];
+
+    return (
+        <div className="photograph-images">
+            <div className="image-stack">
+                {IMAGES.map((image, index) => (
+                    <img
+                        key={index}
+                        className={`image ${index === activeIndex ? 'active' : ''}`}
+                        src={image.src}
+                        alt={image.alt}
+                        style={{ transform: `rotate(${image.angle - angle}deg)` }}
+                    />
+                ))}
+            </div>
+
+        </div>
+    );
+};
+
+export {NavigationBar, ImageChangerComponent, PageRouter, Footer, Loading, LanguageSelector, PhotogrpahImage};
