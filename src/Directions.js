@@ -9,7 +9,10 @@ const Directions = () => {
     return (
         <>
             <div className="directions">
-                {isMobile ? <div> Mobile layout - Directions</div> :
+                {isMobile ?
+                    <div> Mobile layout - Directions
+                        <Chatbot/>
+                    </div> :
                     <>
                         <h1 className="directions-header">Directions and/or Map Page</h1>
                         <div className="directions-container">
