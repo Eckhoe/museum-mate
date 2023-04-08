@@ -5,13 +5,14 @@
 
 .form-input {
     min-width: 60%;
+    border-radius: 25px;
 }
 
 .text-Guest {
     text-align: right;
     border-radius: 25px;
     background: white;
-    color:black;
+    color: black;
     padding: 15px;
     margin: 10px;
     position: relative;
@@ -26,7 +27,8 @@
     position: relative;
 }
 
-.text-Guest, .text-MuseumMate {
+.text-Guest,
+.text-MuseumMate {
     animation: fadeIn 1s ease-in-out;
 }
 
@@ -42,6 +44,7 @@
 .chatbot-button {
     padding: 15px;
     margin: 5px;
+    border-radius: 25px;
 }
 
 .text-list {
@@ -73,7 +76,6 @@
     min-height: min-content;
     width: 70%;
     margin-top: 75px;
-
     position: fixed;
     z-index: 100;
     top: 0;
@@ -83,12 +85,12 @@
     min-width: 500px;
 }
 
-.chatbot-components{
+.chatbot-components {
     padding: 10px;
     border: 2px solid white;
     border-radius: 25px;
     background-color: #333;
-    background-color: rgba(0,0,0,0.75);
+    background-color: rgba(0, 0, 0, 0.75);
 }
 
 .chatbot-header {
@@ -98,22 +100,22 @@
     text-align: center;
 }
 
-.text-container{
+.text-container {
     display: flex;
     flex-direction: column;
 }
 
-.MuseumMate-container{
+.MuseumMate-container {
     display: flex;
     justify-content: flex-start;
 }
 
-.Guest-container{
+.Guest-container {
     display: flex;
     justify-content: flex-end;
 }
 
-.chatbot-toggle{
+.chatbot-toggle {
     bottom: 30px;
     right: 30px;
     position: fixed;
@@ -122,18 +124,18 @@
     cursor: pointer;
     border: 2px solid white;
     border-radius: 25px;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     font-weight: bold;
 }
 
-.chatbot-toggle:hover{
+.chatbot-toggle:hover {
     background-color: white;
     color: black;
     font-weight: bold;
     border: 2px solid black;
 }
 
-.chatbot-minimize{
+.chatbot-minimize {
     flex: 0 0 auto;
     justify-content: right;
     padding: 10px;
@@ -165,4 +167,24 @@ iframe {
     padding: 15px;
     margin: 5px;
     box-shadow: 0 0 20px #0df80d;
+    border-radius: 25px;
+}
+.chatbot-container {
+    max-width: 100%;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin: 20px;
+    z-index: 9999;
+    overflow-y: auto;
+    height: auto;
+}
+
+@media only screen and (max-width: 480px) {
+    .chatbot-container {
+        max-width: 100%;
+        margin: 0;
+        height: auto;
+        overflow-y: scroll;
+    }
 }
