@@ -1,7 +1,7 @@
 import {
     ConfirmLocation,
-    RemoveLines,
     CalcSim,
+    SearchDB,
     _queryPrefix,
     _directionPrefix,
     _museumInfo,
@@ -9,6 +9,8 @@ import {
     _conTypeExamples,
     _subIdentExamples,
     _startPrompt,
+    _startIdentExamples,
+    _endIdentExamples
 } from "./ChatbotHelper";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import React, { useEffect, useRef, useState } from "react";
@@ -45,14 +47,13 @@ const startPrompt = _startPrompt;
 const conTypeExamples = _conTypeExamples;
 const subIdentExamples = _subIdentExamples;
 const musIdentExamples = _musIdentExamples;
-const locations = ["Lobby", "Restroom", "Security Office", "Dinosaur Exhibit", "King Tut Exhibit", "Ancient Greek Exhibit"];
-const exhibits = ["Dinosaur Exhibit", "King Tut Exhibit", "Ancient Greek Exhibit"];
+const startIdentExamples = _startIdentExamples;
+const endIdentExamples = _endIdentExamples;
 const museumTopics = ["MuseumMate", "Niagara on the Lake (NOTL) Museum", "Operating Hours", "Address", "Contact", "Facilities"];
 const model = "text-davinci-003";
 const restart = "\nGuest: ";
 const start = "\nMuseumMate:";
 const stop = [" Guest:", " MuseumMate:"];
-const artifactRef = collection(db, "artifacts");
 let directionPrefix = _directionPrefix;
 let queryPrefix = _queryPrefix;
 let isDirections = false;
@@ -337,7 +338,7 @@ export const chat = async (input) => {
     // Indicate the type of conversation
     let conType = await GenerateBasic(model, "Reply Yes if the following input is asking for direction or No if it is not:\n"
         + conTypeExamples + "Input: " + input + "\nOutput:");
-    isDirections = false;
+    isDirections = conType.includes("Yes");
 
     if (isDirections) {
         // Add user intput to the prompt
@@ -345,27 +346,21 @@ export const chat = async (input) => {
 
         // Use GPT-3 to find the starting and ending locations within the user input and confirm them (i.e., spelling issues)
         // TODO: Change example data
-        let departure = await GenerateBasic(model, "Return just the departure point from the following text: " + input);
-        departure = await ConfirmLocation(locations, departure, locIdentExamples);
-        departure = RemoveLines(departure);
-        let destination = await GenerateBasic(model, "Return just the destination point from the following text: " + input);
-        destination = await ConfirmLocation(locations, destination, locIdentExamples);
-        destination = RemoveLines(destination);
+        let startLoc = await GenerateBasic(model, "Return just the StartPoint from the following Prompt. If there is no StartPoint return N/A:\n" + 
+        startIdentExamples + "Prompt: " + input + "\nStartPoint: ");
+        let endLoc = await GenerateBasic(model, "Return just the EndPoint from the following Prompt. If there is no StartPoint return N/A:\n" + 
+        endIdentExamples + "Prompt: " + input + "\nEndPoint: ");
 
-        let curDirect = "";
-        // Ensure you get the start and endpoints
-        if (locations.includes(departure) && locations.includes(destination)) {
-            // TO DO: Output the points to the path finding algorithm and recieve the directions
-            // Note: The code below is temporary to test the directions, replace later.
-            const tempDirections = ["right(King Tut Exhibit), left, straight, right, straight, left(Security Office)",
-                "straight, right, left, upstairs, right(Ancient Greek Exhibit), downstairs(Dinosaur Exhibit)",
-                "left(Restroom), straight, right, straight(Lobby)"];
-            const direction = tempDirections[Math.floor(Math.random() * tempDirections.length)];
-            curDirect = directionPrefix + direction;
-        }
-        else {
-            curDirect = "Rephrase this: I'm sorry! I couldn't quite figure out where you are and where you are going (some circuits must have crossed). Can you please let me know your current location and where you are trying to go?"
-        }
+        // TO DO: Loop to ensure both a start and endpoint are had
+
+        // TO DO: Check for non artifact items first, can be added as a new collection or hardcoded (e.g., Lobby, Front Desk)
+
+        // Check the database for the startLoc point
+        // Search the database for the closest matching GPTName to the user input
+        startLoc = await SearchDB(startLoc);
+        endLoc = await SearchDB(endLoc);
+
+        // TO DO: Run path-finding
 
         // Use GPT-3 to translate the directions into plain text
         answer = await GenerateBasic(model, curDirect);
@@ -377,7 +372,7 @@ export const chat = async (input) => {
 
         // Use GPT-3 to extract the subject of the conversation
         let subject = await GenerateBasic(model, "Determine the subject or category of the provided text. The input prompts can be in the form of a question or statement, and the model should respond with the most appropriate subject or category. Examples of valid input prompts and their corresponding outputs are:\n"
-            + subIdentExamples + "Prompt: " + input + "Output:");
+            + subIdentExamples + "Prompt: " + input + "\nOutput:");
         let min = Infinity;
         let information = "";
 
@@ -391,26 +386,10 @@ export const chat = async (input) => {
 
         // If we aren't then run the database code
         if (information == "") {
-            // Search the database for the closest matching GPTName to the user input and store the data in a 2Darray
-            const querySnapshot = await getDocs(artifactRef);
-            querySnapshot.forEach((doc) => {
-                let GPTName = doc.data().GPTName;
-                let Desc = doc.data().Description;
-                console.log(doc.data().Id);
-
-                // Use Levenshtein Distance to get a number metric for the closeness of string to the input and record the description
-                temp = CalcSim(subject, GPTName);
-
-                // We want the smallest value, meaning closest
-                if (temp < min) {
-                    min = temp;
-                    information = Desc;
-                    photo = doc.data().images[0];
-                }
-            });
+            information = await SearchDB(subject);
         }
 
-        answer = await GenerateChat(model, queryPrefix + "\nSource Material: " + information + "\n" + chatLog, start, restart, stop + ".");
+        answer = await GenerateChat(model, queryPrefix + "\nSource Material: " + information[0] + "\n" + chatLog, start, restart, stop + ".");
         chatLog += answer[1];
         answer = answer[0];
     }
@@ -419,7 +398,7 @@ export const chat = async (input) => {
     if (lang != "English") {
         answer = await GenerateBasic(model, "Translate the following text into " + lang + ": " + answer);
     }
-    response = [answer, photo];
+    response = [answer, information[2]];
     return response;
 }
 

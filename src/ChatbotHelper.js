@@ -1,4 +1,6 @@
 import { GenerateBasic } from "./GPT-3";
+import { db } from './Firebase';
+import { collection, query, where, getDocs, doc } from 'firebase/firestore';
 
 // This method uses GPT-3 to confirm a natural language input against a set list of data. It requires the set list, input, and a string of training data
 export const ConfirmLocation = async (list, inputText, exampleData) => {
@@ -9,6 +11,7 @@ export const ConfirmLocation = async (list, inputText, exampleData) => {
     return temp;
 }
 
+// ** UNUSED **
 // This method uses GPT-3 to remove unnecessary white spaces from GPT generated responses
 export function RemoveLines(inputText) {
     let temp = inputText.replace(/[\n\r]/g, '');
@@ -69,6 +72,32 @@ export function CalcSim(input, candidate){
         total += best;
     }
     return total;
+}
+
+// This method searches the database for a given input
+export async function SearchDB(input){
+    // Local Variables
+    const artifactRef = collection(db, "artifacts");
+    let output = [];
+    let min = Infinity;
+
+    // Search the database for the closest matching GPTName to the user input and store the data in a 2Darray
+    const querySnapshot = await getDocs(artifactRef);
+    querySnapshot.forEach((doc) => {
+        let GPTName = doc.data().GPTName;
+        //console.log(doc.data().Id);
+
+        // Use Levenshtein Distance to get a number metric for the closeness of string to the input and record the description
+        let temp = CalcSim(input, GPTName);
+
+        // We want the smallest value, meaning closest
+        if (temp < min) {
+            min = temp;
+            output = [doc.data().Description, doc.data().Location, doc.data().images[0]]
+        }
+    });
+
+    return output;
 }
 
 /*
@@ -182,6 +211,36 @@ Output: Contact information
 
 Prompt: Tell me about yourself?
 Output: MuseumMate
+
+`
+
+// Few-shot training data for identifying start points
+export var _startIdentExamples = `Prompt: How do I get to the Washroom from the Isaac Brock artifact?
+StartPoint: Isaac Brock artifact
+
+Prompt: I am at the Lyall Family Ledger, how do I get to the lobby?
+StartPoint: Lyall Family Ledger
+
+Prompt: How do I get to the Boat Exhibit?
+StartPoint: N/A
+
+Prompt: I am currently at the WWII exhibit.
+StartPoint: WWII exhibit
+
+`
+
+// Few-shot training data for identifying end points
+export var _endIdentExamples = `Prompt: How do I get to the Washroom from the Isaac Brock artifact?
+EndPoint: Washroom
+
+Prompt: I am at the Lyall Family Ledger, how do I get to the Lobby?
+EndPoint: Lobby
+
+Prompt: How do I get to the Boat Exhibit?
+EndPoint: Boat Exhibit
+
+Prompt: I am currently at the WWII exhibit.
+EndPoint: N/A
 
 `
 
