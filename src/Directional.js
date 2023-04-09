@@ -66,8 +66,7 @@ function buildGraph() {
   E3_A2.addNeighbour(E3_A3, 6);
   E3_A3.addNeighbour(US1, 4);
   E3_A4.addNeighbour(C3, 3.5);
-  E3_A5.addNeighbour(E3_A6, 5);
-  E3_A6.addNeighbour(C1, 6);
+  E3_A5.addNeighbour(C1, 11);
   C1.addNeighbour(E3_A1, 4);
   C2.addNeighbour(E3_A2, 3);
   US1.addNeighbour(E3_A4, 4);
@@ -131,6 +130,12 @@ function getLowestInOpenSet(openSet, dest) {
   return current;
 }
 
+function getPath(source, dest) {
+  return aStar(eval(source), eval(dest));
+}
+
+module.exports = { getPath };
+
 const ENTERANCE = new Node("ENTERANCE", 11, -3);
 const DESK = new Node("DESK", 14, 0.5);
 const WASHROOM = new Node("WASHROOM", 10, 4.5);
@@ -160,10 +165,7 @@ const E3_A2 = new Node("E3_A2", -19.5, -6);
 const E3_A3 = new Node("E3_A3", -19.5, 0);
 const E3_A4 = new Node("E3_A4", -21, 4.5);
 const E3_A5 = new Node("E3_A5", -25, 3);
-const E3_A6 = new Node("E3_A6", -25, -3);
 
 buildGraph();
-
-aStar(ENTERANCE, E2_A1);
 
 //Remember the things you've accomplished, not the things you haven't
