@@ -6,6 +6,7 @@ class Node {
     this.f = Infinity; //F-score
     this.g = Infinity; //G-score
     this.neighbours = []; //Current neighbours of the node
+    this.direction = "";
   }
 
   addNeighbour(node, distance) {

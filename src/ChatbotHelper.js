@@ -151,13 +151,13 @@ The Security office has a red sign with a white plus symbol for medical aid.
 The Restrooms have a green arrow pointing to them with a restroom symbol. 
 
 Examples:
-Directional Input "right(Dinosaur Exhibit), left, straight, right(Restroom) 
+path: "right(Dinosaur Exhibit), left, straight, right(Restroom) 
 I would be more than happy to get you there! Just follow these directions:
 1. Head right into the Dinosaur Exhibit, you will see a huge T-Rex on display.
 2. Now make a left-hand turn and continue straight.
 3. Finally, turn right and you will see a green arrow with a restroom symbol pointing where to go."
 
-Directional Input "straight(Lobby), right, straight(King Tut Exhibit)
+path: "straight(Lobby), right, straight(King Tut Exhibit)
 I love that exhibit! If you follow these directions you will be there ASAP:
 1. Head straight into the Lobby where you'll notice a big green sign that says "Welcome to the Museum!".
 2. Now turn right turn.

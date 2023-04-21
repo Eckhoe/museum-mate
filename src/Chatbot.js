@@ -375,8 +375,9 @@ export const Chatbot = () => {
 export const chat = async (input) => {
   // Local variables
   let answer = "";
-  let photo = "";
   let response = [];
+  let information = "";
+
 
   // Indicate the type of conversation
   let conType = await GenerateBasic(
@@ -411,7 +412,7 @@ export const chat = async (input) => {
         // TO DO: Run path-finding
 
         // Use GPT-3 to translate the directions into plain text
-        answer = await GenerateBasic(model, curDirect);
+        answer = await GenerateChat(model, directionPrefix + "\npath: " + information[0]+ "\n" + chatLog, start, restart, stop + ".");
         chatLog = chatLog + answer;
     }
     else {
@@ -422,7 +423,6 @@ export const chat = async (input) => {
         let subject = await GenerateBasic(model, "Determine the subject or category of the provided text. The input prompts can be in the form of a question or statement, and the model should respond with the most appropriate subject or category. Examples of valid input prompts and their corresponding outputs are:\n"
             + subIdentExamples + "Prompt: " + input + "\nOutput:");
         let min = Infinity;
-        let information = "";
 
         let temp = await ConfirmLocation(museumTopics, input, musIdentExamples);
         // First check if they are asking about the museum
