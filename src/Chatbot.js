@@ -1,11 +1,8 @@
 import {
-    ConfirmLocation,
-    CalcSim,
     SearchDB,
     _queryPrefix,
     _directionPrefix,
     _museumInfo,
-    _musIdentExamples,
     _conTypeExamples,
     _subIdentExamples,
     _startPrompt,
@@ -21,25 +18,7 @@ import { GenerateBasic, GenerateChat } from "./GPT-3";
 import { useSpeechSynthesis } from "react-speech-kit";
 import "./ChatBot.css";
 import "./App.css";
-import { db } from "./Firebase";
-import { collection, query, where, getDocs, doc } from "firebase/firestore";
 //import $ from "jquery";
-
-// Separate import of firebase database to get chatbot code working
-/* import * as firebase from "firebase/app";
-import "firebase/database";
-const firebaseConfig = {
-    apiKey: "AIzaSyDXd3SXujiOC-0iYxe4E0gg2pfv5NUJaWI",
-    authDomain: "museummate-e06b8.firebaseapp.com",
-    databaseURL: "https://museummate-e06b8-default-rtdb.firebaseio.com",
-    projectId: "museummate-e06b8",
-    storageBucket: "museummate-e06b8.appspot.com",
-    messagingSenderId: "607698800264",
-    appId: "1:607698800264:web:4c20dd01fe7e9ededcd93d",
-    measurementId: "G-JW69LNL7LD"
-};
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database(); */
 
 /*
  * This class implements the MuseumMate chatbot using calls to GPT-3 for text generation and React JS for I/O
@@ -49,17 +28,8 @@ const museumInfo = _museumInfo;
 const startPrompt = _startPrompt;
 const conTypeExamples = _conTypeExamples;
 const subIdentExamples = _subIdentExamples;
-const musIdentExamples = _musIdentExamples;
 const startIdentExamples = _startIdentExamples;
 const endIdentExamples = _endIdentExamples;
-const museumTopics = [
-  "MuseumMate",
-  "Niagara on the Lake (NOTL) Museum",
-  "Operating Hours",
-  "Address",
-  "Contact",
-  "Facilities",
-];
 const model = "text-davinci-003";
 const restart = "\nGuest: ";
 const start = "\nMuseumMate:";
@@ -234,9 +204,8 @@ export const Chatbot = () => {
   // Add any other chatbot suggestions to array
   const suggestions = [
     "Here are some suggestions you can ask:",
-    "Where is the museum?",
+    "What is the museum address?",
     "What are some famous exhibits?",
-    "Are there any events approaching?",
     "What are the hours of operation?",
   ];
 
@@ -376,7 +345,7 @@ export const chat = async (input) => {
   // Local variables
   let answer = "";
   let response = [];
-  let information = "";
+  let information = [];
 
 
   // Indicate the type of conversation
@@ -412,7 +381,8 @@ export const chat = async (input) => {
         // TO DO: Run path-finding
 
         // Use GPT-3 to translate the directions into plain text
-        answer = await GenerateChat(model, directionPrefix + "\npath: " + information[0]+ "\n" + chatLog, start, restart, stop + ".");
+        let context = "\npath: " + information[3];
+        answer = await GenerateChat(model, directionPrefix + context+ "\n" + chatLog, start, restart, stop + ".");
         chatLog = chatLog + answer;
     }
     else {
@@ -420,24 +390,30 @@ export const chat = async (input) => {
         chatLog = chatLog + input;
 
         // Use GPT-3 to extract the subject of the conversation
-        let subject = await GenerateBasic(model, "Determine the subject or category of the provided text. The input prompts can be in the form of a question or statement, and the model should respond with the most appropriate subject or category. Examples of valid input prompts and their corresponding outputs are:\n"
-            + subIdentExamples + "Prompt: " + input + "\nOutput:");
-        let min = Infinity;
+        let subject = await GenerateBasic(model, "Classify the subject or category of given text prompts, and generate appropriate outputs accordingly. Example input prompts can be in question or statement form and should elicit responses that identify the subject of conversation. Examples of valid input prompts and outputs are:\n"
+            + subIdentExamples + "Input: " + input + "\nOutput: ");
+            
+        // Note, searching is all done in lower case for accuracy
+        let temp = subject.toLowerCase();
 
-        let temp = await ConfirmLocation(museumTopics, input, musIdentExamples);
         // First check if they are asking about the museum
         museumInfo.forEach(index => {
-            if (temp.includes(index[0])) {
-                information = index[1];
-            }
+          if (temp.includes(index[0].toLowerCase())) {
+              information[0] = index[1];
+              information[1] = "";
+          }
         })
 
         // If we aren't then run the database code
-        if (information == "") {
+        if (information.length == 0) {
+          // Check if it is just a general conversation
+          if(!temp.includes("general conversation")){
             information = await SearchDB(subject);
+          }
         }
 
-        answer = await GenerateChat(model, queryPrefix + "\nSource Material: " + information[0] + "\n" + chatLog, start, restart, stop + ".");
+        let context = "\nSource Material: " + information[0];
+        answer = await GenerateChat(model, queryPrefix + context + "\n" + chatLog, start, restart, stop + ".");
         chatLog += answer[1];
         answer = answer[0];
     }
@@ -446,7 +422,7 @@ export const chat = async (input) => {
     if (lang != "English") {
         answer = await GenerateBasic(model, "Translate the following text into " + lang + ": " + answer);
     }
-    response = [answer, information[2]];
+    response = [answer, information[1]];
     return response;
 };
 

@@ -93,7 +93,7 @@ export async function SearchDB(input){
         // We want the smallest value, meaning closest
         if (temp < min) {
             min = temp;
-            output = [doc.data().Description, doc.data().Location, doc.data().images[0]]
+            output = [doc.data().Description, doc.data().images[0], doc.data().Location]
         }
     });
 
@@ -168,7 +168,7 @@ export var _startPrompt = "Hi! I am MuseumMate and I can provide information on 
 
 // MuseumMate information
 export var _museumInfo = [["MuseumMate", "MuseumMate is a robust chatbot that can provide information on every exhibit, artifact, and archive found in the Niagara on the Lake (NOTL) Museum, as well as give detailed directions for guests to find any exhibit or facility within the museum."],
-["Niagara on the Lake (NOTL) Museum", `The Niagara Historical Society was established in 1895 to foster an appreciation of Niagara-on-the-Lake's rich heritage. Within a year, the Society had a significant collection of artefacts that it decided to open a Museum in the local Courthouse. In 1907, under the leadership of the Society’s President, Janet Carnochan, they opened Memorial Hall, Ontario’s first purpose-built Museum.
+["NOTL Museum", `The Niagara Historical Society was established in 1895 to foster an appreciation of Niagara-on-the-Lake's rich heritage. Within a year, the Society had a significant collection of artefacts that it decided to open a Museum in the local Courthouse. In 1907, under the leadership of the Society’s President, Janet Carnochan, they opened Memorial Hall, Ontario’s first purpose-built Museum.
 The NOTL Museum acknowledges that we are operating on lands that have been inhabited by Indigenous people for millennia and would like to honor all the centuries of Indigenous Peoples who have walked on Turtle Island before us. We are grateful for the opportunity to live, work and play here in Niagara-on-the-Lake and we give thanks to the ancestors who have served as stewards of this special place. Today, we have a responsibility to live in balance and harmony with each other and all living things, so that our 7th generation will be able to enjoy these beautiful lands as well!
 Today, the Niagara Historical Society continues to promote and preserve our local heritage by owning and operating the Niagara-on-the-Lake Museum. The site now consists of three independent buildings that are merged together. The three buildings are: The High School building (1875), Memorial Hall (1907) and the Link Building (1971).
 The Niagara-on-the-Lake Museum contains one of Ontario's most important local history collections. Located 20km north of Niagara Falls, Niagara-on-the-Lake was an important home and terminus for Indigenous peoples, provided a safe haven for refugees and United Empire Loyalists, was the capital of Upper Canada, was in the middle of a war zone and visited by millions as a place of recreation for over 160 years. These stories play a major role in the development of Canada. The galleries host a permanent exhibition, titled Our Story, chronicling the history of our community. Two temporary exhibitions are mounted each year and over 80 engaging programs are enjoyed by the young and the young at heart.`],
@@ -190,6 +190,8 @@ Output: Yes
 Input: How do I get to the battlefield of the War of 1812?
 Output: Yes
 
+Exception: Asking for the museum address is "No"
+
 ArtifactInfo:
 Input: Can you give me information about the cannon used in the Battle of Lundy's Lane?
 Output: No
@@ -199,19 +201,38 @@ Input: What is the history behind Laura Secord's trek during the War of 1812?
 Output: No
 Input: Can you tell me about the significance of the Brock Monument at Queenston Heights?
 Output: No
-
 `
 
 // Few-shot training data for identifying subjects
-export var _subIdentExamples = `Prompt: Where is the War of 1812 exhibit located?
+export var _subIdentExamples = `Input: What are the operating hours of the Niagara on the Lake Museum?
+Output: Operating Hours
+
+Input: Can you provide me with the contact information for MuseumMate?
+Output: Contact
+
+Input: Tell me about the Niagara on the Lake Museum.
+Output: Niagara on the Lake Museum
+
+Input: What are the facilities available at the museum?
+Output: Facilities
+
+Input: Can you tell me about the history of "Brock's Monument" in the museum?
+Output: Brock's Monument
+
+Input: Hi, how are you?
+Output: General conversation
+
+Input: Is Niagara on the Lake located in Ontario?
+Output: General conversation
+
+Input: What is the address of the Niagara on the Lake Museum?
+Output: Address
+
+Input: Can you tell me about the War of 1812 exhibit?
 Output: War of 1812 exhibit
 
-Prompt: What is the phone number?
-Output: Contact information
-
-Prompt: Tell me about yourself?
-Output: MuseumMate
-
+Input: Do you have any information about the local wineries in Niagara on the Lake?
+Output: General conversation
 `
 
 // Few-shot training data for identifying start points
@@ -241,23 +262,5 @@ EndPoint: Boat Exhibit
 
 Prompt: I am currently at the WWII exhibit.
 EndPoint: N/A
-
-`
-
-// Few-shot training data for identifying museum information
-export var _musIdentExamples = `
-Examples:
-Input: Where time are you open?
-Output:Operating Hours
-Input: When was the NOTL museum founded?
-Output:Niagara on the Lake (NOTL) Museum
-Input: Is there a ramp?
-Output:Facilities
-Input: What is the phone number?
-Output:Contact
-Input: Tell me about MuseumMate?
-Output:MuseumMate
-Input: Tell me about yourself?
-Output:MuseumMate
 
 `
