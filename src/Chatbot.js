@@ -1,13 +1,14 @@
 import {
-    SearchDB,
-    _queryPrefix,
-    _directionPrefix,
-    _museumInfo,
-    _conTypeExamples,
-    _subIdentExamples,
-    _startPrompt,
-    _startIdentExamples,
-    _endIdentExamples
+  RemoveLines,
+  SearchDB,
+  _queryPrefix,
+  _directionPrefix,
+  _museumInfo,
+  _conTypeExamples,
+  _subIdentExamples,
+  _startPrompt,
+  _startIdentExamples,
+  _endIdentExamples
 } from "./ChatbotHelper";
 import SpeechRecognition, {
   useSpeechRecognition,
@@ -16,6 +17,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { LanguageSelector, Loading } from "./Components";
 import { GenerateBasic, GenerateChat } from "./GPT-3";
 import { useSpeechSynthesis } from "react-speech-kit";
+import { getPath } from "./Directional.js";
 import "./ChatBot.css";
 import "./App.css";
 //import $ from "jquery";
@@ -34,6 +36,7 @@ const model = "text-davinci-003";
 const restart = "\nGuest: ";
 const start = "\nMuseumMate:";
 const stop = [" Guest:", " MuseumMate:"];
+const staticLocations = ["Entrance", "Desk", "Washroom"];
 let directionPrefix = _directionPrefix;
 let queryPrefix = _queryPrefix;
 let isDirections = false;
@@ -351,7 +354,7 @@ export const chat = async (input) => {
   // Indicate the type of conversation
   let conType = await GenerateBasic(
     model,
-    "Reply Yes if the following input is asking for direction or No if it is not:\n" +
+    "Determine if the input is asking for directions or guidance on how to navigate from one location to another. Reply 'Yes' if it is, or 'No' if it is not. The input could be related to any type of location, such as public places, buildings, rooms, or landmarks.\n" +
       conTypeExamples +
       "Input: " +
       input +
@@ -366,24 +369,39 @@ export const chat = async (input) => {
         // TODO: Change example data
         let startLoc = await GenerateBasic(model, "Return just the StartPoint from the following Prompt. If there is no StartPoint return N/A:\n" + 
         startIdentExamples + "Prompt: " + input + "\nStartPoint: ");
-        let endLoc = await GenerateBasic(model, "Return just the EndPoint from the following Prompt. If there is no StartPoint return N/A:\n" + 
+        let endLoc = await GenerateBasic(model, "Return just the EndPoint from the following Prompt. If there is no EndPoint return N/A:\n" + 
         endIdentExamples + "Prompt: " + input + "\nEndPoint: ");
 
         // TO DO: Loop to ensure both a start and endpoint are had
 
-        // TO DO: Check for non artifact items first, can be added as a new collection or hardcoded (e.g., Lobby, Front Desk)
+        //Test: How do I get to the entrance from the 1812 exhibit?
 
-        // Check the database for the startLoc point
-        // Search the database for the closest matching GPTName to the user input
-        startLoc = await SearchDB(startLoc);
-        endLoc = await SearchDB(endLoc);
+        // Check for static locations, then, if needed, check the database for locations
+        let temp = await GenerateBasic(model, "Return just the location from the following that matches closest to the input. If none match return other:\n" + 
+        "Locations: " + staticLocations + "\nInput: " + startLoc + "\nOutput: ");
+        if((temp.toLowerCase()).includes("other")){
+          temp = await SearchDB(startLoc);
+          startLoc = temp[2];
+        }else{
+          startLoc = RemoveLines(temp.toUpperCase());
+        }
+        temp = await GenerateBasic(model, "Return just the location from the following that matches closest to the input. If none match return other:\n" + 
+        "Locations: " + staticLocations + "\nInput: " + endLoc + "\nOutput: ");
+        if((temp.toLowerCase()).includes("other")){
+          temp = await SearchDB(endLoc);
+          endLoc= temp[2];
+        }else{
+          endLoc = RemoveLines(temp.toUpperCase());
+        }
 
-        // TO DO: Run path-finding
+        // Run pathfinding algorithm
+        let path = await getPath(startLoc, endLoc);
 
         // Use GPT-3 to translate the directions into plain text
-        let context = "\npath: " + information[3];
-        answer = await GenerateChat(model, directionPrefix + context+ "\n" + chatLog, start, restart, stop + ".");
-        chatLog = chatLog + answer;
+        let context = "\npath: " + path;
+        answer = await GenerateChat(model, directionPrefix + context + "\n" + chatLog, start, restart, stop + ".");
+        chatLog += answer[1];
+        answer = answer[0];
     }
     else {
         // Add user intput to the prompt

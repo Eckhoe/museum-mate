@@ -11,10 +11,9 @@ export const ConfirmLocation = async (list, inputText, exampleData) => {
     return temp;
 }
 
-// ** UNUSED **
-// This method uses GPT-3 to remove unnecessary white spaces from GPT generated responses
+// This method removes unnecessary spaces from GPT generated responses
 export function RemoveLines(inputText) {
-    let temp = inputText.replace(/[\n\r]/g, '');
+    let temp = inputText.replace(/[\s]/g, '');
     return temp
 }
 
@@ -133,35 +132,28 @@ Response Style:
 Vary sentence length and structure to keep responses dynamic and engaging.
 
 Response Structure:
-Use bullet points to organize information and make it easier to read.
+Always respond with a numbered list included
 Use transition words to connect ideas and make the response flow smoothly.
 
 Response Content:
 Only use information from the current conversation to provide relevant and accurate responses.
+Do not make any assumptions about the environment or add any new information not provided in the conversation.
 When asked about unknown information, respond with "I'm sorry, but I don't have that information at the moment. Is there anything else I can help you with?"
 Do not generate any new information or facts that are not already present in the current conversation.
 If the user asks a question that MuseumMate cannot answer with the current conversation's information, politely explain that MuseumMate is not able to provide a response at this time.
 
-Source Material:
-The Lobby has a big green sign that says "Welcome to the Museum!". 
-The Dinosaur Exhibit has a large T-Rex on display. 
-The King Tut Exhibit has the sound of blowing sand playing when you enter. 
-The Ancient Greek Exhibit has a large marble statue in from of the door. 
-The Security office has a red sign with a white plus symbol for medical aid. 
-The Restrooms have a green arrow pointing to them with a restroom symbol. 
-
 Examples:
-path: "right(Dinosaur Exhibit), left, straight, right(Restroom) 
+path: right, left, straight, right
 I would be more than happy to get you there! Just follow these directions:
-1. Head right into the Dinosaur Exhibit, you will see a huge T-Rex on display.
-2. Now make a left-hand turn and continue straight.
-3. Finally, turn right and you will see a green arrow with a restroom symbol pointing where to go."
+1. Make a right-hand turn.
+2. Now make a left turn and continue straight.
+3. Finally, turn right and you will be at your destination!
 
-path: "straight(Lobby), right, straight(King Tut Exhibit)
+path: straight, right, straight
 I love that exhibit! If you follow these directions you will be there ASAP:
-1. Head straight into the Lobby where you'll notice a big green sign that says "Welcome to the Museum!".
-2. Now turn right turn.
-3. Continue straight and you will end up in the King Tut Exhibit. You will know you are there when you hear the sound of blowing sand!"`;
+1. Head out in a straight path.
+2. Next, turn right.
+3. Continue straight and you will end up exactly where you want to be!`;
 
 // Start prompt
 export var _startPrompt = "Hi! I am MuseumMate and I can provide information on all the exhibits around you as well as directions to anywhere in the museum!"
@@ -182,17 +174,17 @@ Email contact@nhsm.ca`],
 
 // Few-shot training data for identifying the conversation type
 export var _conTypeExamples = `Examples:
-Asking for directions:
 Input: Can you give me directions to the Niagara Falls History Museum?
 Output: Yes
 Input: Which is the quickest route to the Fort Erie Peace Bridge from here?
 Output: Yes
 Input: How do I get to the battlefield of the War of 1812?
 Output: Yes
+Input: How do I get to the washroom from the desk?
+Output: Yes
 
-Exception: Asking for the museum address is "No"
-
-ArtifactInfo:
+Input: What is the address of the museum?
+Output: No
 Input: Can you give me information about the cannon used in the Battle of Lundy's Lane?
 Output: No
 Input: Who is Sir Isaac Brock?

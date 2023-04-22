@@ -14,7 +14,7 @@ class Node {
       //if the node that is trying to be added is not within the neightbours array of the 'parent' node
       this.neighbours.push([node, distance]); //adds the neighbouring node into the array of neighbours with a distance from the 'parent'
       node.neighbours.push([this, distance]); //adds the 'parent' node into the array of the neighbouring nodes neighbours
-      //Ex. If the Enterance node is a neighbour of the Desk, then the Desk is a neighbour of the Enterance node
+      //Ex. If the Entrance node is a neighbour of the Desk, then the Desk is a neighbour of the Entrance node
     }
   }
 }
@@ -22,10 +22,10 @@ class Node {
 function buildGraph() {
   //Function adds the neighbours which builds the graph
   //Main Room
-  ENTERANCE.addNeighbour(DESK, 4);
-  ENTERANCE.addNeighbour(WASHROOM, 7.5);
-  ENTERANCE.addNeighbour(FIRST_EXHIBIT, 5);
-  ENTERANCE.addNeighbour(E1_A1, 4.5);
+  ENTRANCE.addNeighbour(DESK, 4);
+  ENTRANCE.addNeighbour(WASHROOM, 7.5);
+  ENTRANCE.addNeighbour(FIRST_EXHIBIT, 5);
+  ENTRANCE.addNeighbour(E1_A1, 4.5);
   DESK.addNeighbour(WASHROOM, 3);
   DESK.addNeighbour(FIRST_EXHIBIT, 8);
   DESK.addNeighbour(E1_A1, 8);
@@ -90,7 +90,7 @@ function aStar(source, dest) {
   while (openSet.length > 0) {
     var current = getLowestInOpenSet(openSet, dest); //will be the node with the lowest fScore
     // console.log(current.name);
-    if (current === dest) return reconstructPath(cameFrom, current, dest); //may not need to use the function, may just be able to return the cameFrom set
+    if (current === dest) return reconstructPath(cameFrom, current, dest); // This is needed as it finds cardinality and you cannot just return the cameFrom set
 
     const index = openSet.indexOf(cameFrom, current); //gets the index of the current node
     openSet.splice(index, 1); //removes it from the openSet, since we no longer want to work with the node
@@ -111,15 +111,92 @@ function aStar(source, dest) {
   }
 }
 
-//This may not be needed, may just be able to store the path within the A_Star more research to be done
+// This finds the cardinality of the current transition from x and y coordinates
+function getCardinality(path){
+  let dirPath = [];
+
+  // Get the cardinality by comparing the vectors of two connected nodes in the list radially
+  for(let i = path.length - 1; i > 0; i--){
+    let A = path[i];
+    let B = path[i-1];
+    let dx = B.x - A.x;
+    let dy = B.y - A.y;
+    let angle = Math.atan2(dx, dy);
+    if (angle > -Math.PI/8 && angle <= Math.PI/8) {
+      dirPath[path.length - i] = "east";
+    } else if (angle > Math.PI/8 && angle <= 3*Math.PI/8) {
+      dirPath[path.length - i] = "northeast";
+    } else if (angle > 3*Math.PI/8 && angle <= 5*Math.PI/8) {
+      dirPath[path.length - i] = "north";
+    } else if (angle > 5*Math.PI/8 && angle <= 7*Math.PI/8) {
+      dirPath[path.length - i] = "northwest";
+    } else if (angle > 7*Math.PI/8 || angle <= -7*Math.PI/8) {
+      dirPath[path.length - i] = "west";
+    } else if (angle > -7*Math.PI/8 && angle <= -5*Math.PI/8) {
+      dirPath[path.length - i] = "southwest";
+    } else if (angle > -5*Math.PI/8 && angle <= -3*Math.PI/8) {
+      dirPath[path.length - i] = "south";
+    } else if (angle > -3*Math.PI/8 && angle <= -Math.PI/8) {
+      dirPath[path.length - i] = "southeast";
+    }
+  }
+
+  // Return the translation of the above
+  return naturalDir(dirPath);
+}
+
+// This translates to natural language directions from cardinality
+function naturalDir(path){
+  const card = ["north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest"];
+  let dirPath = [];
+
+  // Get the natural language directions by comparing the relative position of the cardinaltiy array to the nodes
+  for(let i = 0; i < path.length - 1; i++){
+    let cur = card.indexOf(i);
+    let next = card.indexOf(i+1);
+    let diff = next - cur;
+    let modDiff = ((diff % 8) + 8) % 8; // This seems complex but it is to ensure clockwise evaluation (non negative) and between 0 and 7
+    switch(modDiff){
+      case 0:
+        dirPath[i] = "straight";
+        break;
+      case 1:
+        dirPath[i] = "slight right";
+        break;
+      case 2:
+        dirPath[i] = "right";
+        break;
+      case 3:
+        dirPath[i] = "sharp right";
+        break;
+      case 4:
+        dirPath[i] = "sharp left";
+        break;
+      case 5:
+        dirPath[i] = "left";
+        break;
+      case 6:
+        dirPath[i] = "slight left";
+        break;
+      case 7:
+        dirPath[i] = "straight";
+        break;
+    }
+  }
+  return dirPath;
+}
+
+// THIS IS NOW NEEDED AS IT IS WHERE THE CARDINALITY IS DETERMINED
 function reconstructPath(cameFrom, current, dest) {
   let finalPath = [];
-  finalPath.push(dest.name);
+  finalPath.push(dest);
   while (cameFrom.has(current)) {
     current = cameFrom.get(current);
-    finalPath.push(current.name);
+    finalPath.push(current);
   }
-  return finalPath;
+
+  // Return a natual language path
+  return getCardinality(finalPath);
 }
 
 function getLowestInOpenSet(openSet, dest) {
@@ -137,7 +214,7 @@ function getPath(source, dest) {
 
 module.exports = { getPath };
 
-const ENTERANCE = new Node("ENTERANCE", 11, -3);
+const ENTRANCE = new Node("ENTRANCE", 11, -3);
 const DESK = new Node("DESK", 14, 0.5);
 const WASHROOM = new Node("WASHROOM", 10, 4.5);
 const FIRST_EXHIBIT = new Node("FIRST_EXHIBIT", 6, 2.5);
@@ -170,3 +247,4 @@ const E3_A5 = new Node("E3_A5", -25, 3);
 buildGraph();
 
 //Remember the things you've accomplished, not the things you haven't
+//Remember to buy milk next time you are at the grocery store
