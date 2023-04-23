@@ -73,6 +73,7 @@
     align-items: center;
     width: 100%;
     margin-top: 20px;
+    
 }
 
 .row div {
@@ -97,19 +98,29 @@
 .row table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 10px;
+    margin-bottom: 70px;
 }
 
+
 .row table td {
-    padding: 5px;
+    padding: 10px;
     text-align: center;
-    border: 1px solid #ddd;
+    border: 3px solid #070404;
+    font-size: larger;
+    color: #00244a;
+    background-color:  whitesmoke;
+    font-weight: 700;
 }
 
 .row p {
     font-size: 1rem;
     margin-bottom: 10px;
 }
+
+.text{
+    font-size: 1.2rem;
+}
+
 
 @media screen and (min-width: 768px) {
     .container {
@@ -142,13 +153,14 @@
         margin-right: 20px;
     }
 
+    
     .row h2 {
-        font-size: 1.5rem;
+        font-size: 1.8rem;
         margin-bottom: 15px;
     }
 
     .row p {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         margin-bottom: 15px;
     }
 }

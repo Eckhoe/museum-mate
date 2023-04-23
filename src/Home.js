@@ -128,7 +128,8 @@ const Home = () => {
                     </div>
 
                     <div className="row">
-                        <div className="text"> Hours
+                        <div className="text"> 
+                        <h2>Hours</h2>
                             <table>
                                 <tr>
                                     <td>Monday</td>
