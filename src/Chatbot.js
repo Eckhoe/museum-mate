@@ -375,6 +375,7 @@ export const chat = async (input) => {
         // TO DO: Loop to ensure both a start and endpoint are had
 
         //Test: How do I get to the entrance from the 1812 exhibit?
+        //Test: How do I get to the Mary Ann McKay Death exhibit from the desk?
 
         // Check for static locations, then, if needed, check the database for locations
         let temp = await GenerateBasic(model, "Return just the location from the following that matches closest to the input. If none match return other:\n" + 

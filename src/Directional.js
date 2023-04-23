@@ -119,8 +119,8 @@ function getCardinality(path){
   for(let i = path.length - 1; i > 0; i--){
     let A = path[i];
     let B = path[i-1];
-    let dx = B.x - A.x;
-    let dy = B.y - A.y;
+    let dx = B[0] - A[0];
+    let dy = B[1] - A[1];
     let angle = Math.atan2(dx, dy);
     if (angle > -Math.PI/8 && angle <= Math.PI/8) {
       dirPath[path.length - i] = "east";
@@ -158,28 +158,35 @@ function naturalDir(path){
     let modDiff = ((diff % 8) + 8) % 8; // This seems complex but it is to ensure clockwise evaluation (non negative) and between 0 and 7
     switch(modDiff){
       case 0:
-        dirPath[i] = "straight";
+        // The conditional prevents repeating straight
+        if(i > 0){
+          if(dirPath[i-1] != "straight"){
+            dirPath.push("straight");
+          }
+        }else{
+          dirPath.push("straight");
+        }
         break;
       case 1:
-        dirPath[i] = "slight right";
+        dirPath.push("slight right");
         break;
       case 2:
-        dirPath[i] = "right";
+        dirPath.push("right");
         break;
       case 3:
-        dirPath[i] = "sharp right";
+        dirPath.push("sharp right");
         break;
       case 4:
-        dirPath[i] = "sharp left";
+        dirPath.push("sharp left");
         break;
       case 5:
-        dirPath[i] = "left";
+        dirPath.push("left");
         break;
       case 6:
-        dirPath[i] = "slight left";
+        dirPath.push("slight left");
         break;
-      case 7:
-        dirPath[i] = "straight";
+      default:
+        direction = "invalid input";
         break;
     }
   }
@@ -189,10 +196,10 @@ function naturalDir(path){
 // THIS IS NOW NEEDED AS IT IS WHERE THE CARDINALITY IS DETERMINED
 function reconstructPath(cameFrom, current, dest) {
   let finalPath = [];
-  finalPath.push(dest);
+  finalPath.push([dest.x, dest.y]);
   while (cameFrom.has(current)) {
     current = cameFrom.get(current);
-    finalPath.push(current);
+    finalPath.push([current.x, current.y]);
   }
 
   // Return a natual language path
@@ -209,40 +216,101 @@ function getLowestInOpenSet(openSet, dest) {
 }
 
 function getPath(source, dest) {
+  // Reinit
+  ENTRANCE.f = Infinity;
+  DESK.f = Infinity;
+  WASHROOM.f = Infinity;
+  FIRST_EXHIBIT.f = Infinity;
+  E1_A1.f = Infinity;
+  E1_A2.f = Infinity;
+  E1_A3.f = Infinity;
+  E1_A4.f = Infinity;
+  E1_A5.f = Infinity;
+  LS1.f = Infinity;
+
+  SECOND_EXHIBIT.f = Infinity;
+  E2_A1.f = Infinity;
+  E2_A2.f = Infinity;
+  E2_A3.f = Infinity;
+  E2_A4.f = Infinity;
+  E2_A5.f = Infinity;
+  LS2 = Infinity;
+
+  US1.f = Infinity;
+  US2.f = Infinity;
+  C1.f = Infinity;
+  C2.f = Infinity;
+  C3.f = Infinity;
+  E3_A1.f = Infinity;
+  E3_A2.f = Infinity;
+  E3_A3.f = Infinity;
+  E3_A4.f = Infinity;
+  E3_A5.f = Infinity;
+
+  ENTRANCE.g = Infinity;
+  DESK.g = Infinity;
+  WASHROOM.g = Infinity;
+  FIRST_EXHIBIT.g = Infinity;
+  E1_A1.g = Infinity;
+  E1_A2.g = Infinity;
+  E1_A3.g = Infinity;
+  E1_A4.g = Infinity;
+  E1_A5.g = Infinity;
+  LS1.g = Infinity;
+
+  SECOND_EXHIBIT.g = Infinity;
+  E2_A1.g = Infinity;
+  E2_A2.g = Infinity;
+  E2_A3.g = Infinity;
+  E2_A4.g = Infinity;
+  E2_A5.g = Infinity;
+  LS2 = Infinity;
+
+  US1.g = Infinity;
+  US2.g = Infinity;
+  C1.g = Infinity;
+  C2.g = Infinity;
+  C3.g = Infinity;
+  E3_A1.g = Infinity;
+  E3_A2.g = Infinity;
+  E3_A3.g = Infinity;
+  E3_A4.g = Infinity;
+  E3_A5.g = Infinity;
+
   return aStar(eval(source), eval(dest));
 }
 
 module.exports = { getPath };
 
-const ENTRANCE = new Node("ENTRANCE", 11, -3);
-const DESK = new Node("DESK", 14, 0.5);
-const WASHROOM = new Node("WASHROOM", 10, 4.5);
-const FIRST_EXHIBIT = new Node("FIRST_EXHIBIT", 6, 2.5);
-const E1_A1 = new Node("E1_A1", 6, -2);
-const E1_A2 = new Node("E1_A2", 2, 0.5);
-const E1_A3 = new Node("E1_A3", 0, 4);
-const E1_A4 = new Node("E1_A4", -2, 0.5);
-const E1_A5 = new Node("E1_A5", -5.5, 0.5);
-const LS1 = new Node("LS1", -5.5, 4);
+let ENTRANCE = new Node("ENTRANCE", 11, -3);
+let DESK = new Node("DESK", 14, 0.5);
+let WASHROOM = new Node("WASHROOM", 10, 4.5);
+let FIRST_EXHIBIT = new Node("FIRST_EXHIBIT", 6, 2.5);
+let E1_A1 = new Node("E1_A1", 6, -2);
+let E1_A2 = new Node("E1_A2", 2, 0.5);
+let E1_A3 = new Node("E1_A3", 0, 4);
+let E1_A4 = new Node("E1_A4", -2, 0.5);
+let E1_A5 = new Node("E1_A5", -5.5, 0.5);
+let LS1 = new Node("LS1", -5.5, 4);
 
-const SECOND_EXHIBIT = new Node("SECOND_EXHIBIT", -9.5, 2.5);
-const E2_A1 = new Node("E2_A1", -9, -1);
-const E2_A2 = new Node("E2_A2", -12, 0);
-const E2_A3 = new Node("E2_A3", -15, 4);
-const E2_A4 = new Node("E2_A4", -15, -3);
-const E2_A5 = new Node("E2_A5", -9, -8);
-const LS2 = new Node("LS2", -16, -7.5);
+let SECOND_EXHIBIT = new Node("SECOND_EXHIBIT", -9.5, 2.5);
+let E2_A1 = new Node("E2_A1", -9, -1);
+let E2_A2 = new Node("E2_A2", -12, 0);
+let E2_A3 = new Node("E2_A3", -15, 4);
+let E2_A4 = new Node("E2_A4", -15, -3);
+let E2_A5 = new Node("E2_A5", -9, -8);
+let LS2 = new Node("LS2", -16, -7.5);
 
-const US1 = new Node("US1", -17.5, 4);
-const US2 = new Node("US2", -25, -10);
-const C1 = new Node("C1", -25, -9);
-const C2 = new Node("C2", -18, -9);
-const C3 = new Node("C3", -25, 4.5);
-const E3_A1 = new Node("E3_A1", -21, -9);
-const E3_A2 = new Node("E3_A2", -19.5, -6);
-const E3_A3 = new Node("E3_A3", -19.5, 0);
-const E3_A4 = new Node("E3_A4", -21, 4.5);
-const E3_A5 = new Node("E3_A5", -25, 3);
+let US1 = new Node("US1", -17.5, 4);
+let US2 = new Node("US2", -25, -10);
+let C1 = new Node("C1", -25, -9);
+let C2 = new Node("C2", -18, -9);
+let C3 = new Node("C3", -25, 4.5);
+let E3_A1 = new Node("E3_A1", -21, -9);
+let E3_A2 = new Node("E3_A2", -19.5, -6);
+let E3_A3 = new Node("E3_A3", -19.5, 0);
+let E3_A4 = new Node("E3_A4", -21, 4.5);
+let E3_A5 = new Node("E3_A5", -25, 3);
 
 buildGraph();
 
