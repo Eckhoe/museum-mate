@@ -6,7 +6,10 @@ const openai = new OpenAIApi(configuration);
 
 /* This method generates a response for a given input and is formatted to work better for chat responses and allows for information to passed through */
 export const GenerateChat = async (model, prompt, start = '', restart = '', stop = []) => {
-  while (true) {
+  let retries = 0;
+  const maxRetries = 3;
+
+  while (retries < maxRetries) {
     try {
       const response = await openai.createCompletion({
         model: model,
@@ -20,13 +23,34 @@ export const GenerateChat = async (model, prompt, start = '', restart = '', stop
       });
       let output = [response.data.choices[0]['text'], start + response.data.choices[0]['text'] + restart]
       return output;
-    } catch (error) { }
+    } catch (error) {
+      if (error.response) {
+        // API returned an error response
+        console.error(`API error: ${error.response.status} - ${error.response.data.message}`);
+      } else if (error.request) {
+        // Request failed to reach the API
+        console.error(`Request error: ${error.request}`);
+      } else {
+        // Other error occurred
+        console.error(`Unknown error: ${error.message}`);
+      }
+      retries++;
+      // exponential backoff
+      await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retries)));
+    }
   }
+
+  // Retry limit reached
+  console.error(`Max retries exceeded. Failed to generate chat response for prompt: ${prompt}`);
+  return null;
 }
 
 /* This method is a basic text completion function */
 export const GenerateBasic = async (model, prompt) => {
-  while (true) {
+  let retries = 0;
+  const maxRetries = 3;
+
+  while (retries < maxRetries) {
     try {
       const response = await openai.createCompletion({
         model: model,
@@ -38,6 +62,20 @@ export const GenerateBasic = async (model, prompt) => {
         presence_penalty: 0.6,
       });
       return response.data.choices[0]['text'];
-    } catch (error) { }
+    } catch (error) {
+      if (error.response) {
+        // API returned an error response
+        console.error(`API error: ${error.response.status} - ${error.response.data.message}`);
+      } else if (error.request) {
+        // Request failed to reach the API
+        console.error(`Request error: ${error.request}`);
+      } else {
+        // Other error occurred
+        console.error(`Unknown error: ${error.message}`);
+      }
+      retries++;
+      // exponential backoff
+      await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retries)));
+    }
   }
 }

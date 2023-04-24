@@ -396,13 +396,15 @@ export const chat = async (input) => {
         }
 
         // Run pathfinding algorithm
-        let path = await getPath(startLoc, endLoc);
+        let path = await getPath("ENTERANCE", "US2");
 
         // Use GPT-3 to translate the directions into plain text
         let context = "\npath: " + path;
         answer = await GenerateChat(model, directionPrefix + context + "\n" + chatLog, start, restart, stop + ".");
-        chatLog += answer[1];
-        answer = answer[0];
+        if(answer != null){
+          chatLog += answer[1];
+          answer = answer[0];
+        }
     }
     else {
         // Add user intput to the prompt
@@ -433,15 +435,22 @@ export const chat = async (input) => {
 
         let context = "\nSource Material: " + information[0];
         answer = await GenerateChat(model, queryPrefix + context + "\n" + chatLog, start, restart, stop + ".");
-        chatLog += answer[1];
-        answer = answer[0];
+        if(answer != null){
+          chatLog += answer[1];
+          answer = answer[0];
+        }
     }
 
     // Generate an output
     if (lang != "English") {
         answer = await GenerateBasic(model, "Translate the following text into " + lang + ": " + answer);
     }
-    response = [answer, information[1]];
+    if(answer == null){
+      response = ["I apologize, but I seem to be having some technical difficulties! Please enjoy the museum while the code monkeys fix me!", ""];
+    }
+    else{
+      response = [answer, information[1]];
+    }
     return response;
 };
 
