@@ -405,15 +405,18 @@ export const chat = async (input) => {
 
       // Run pathfinding algorithm
       let path = await getPath(startLoc, endLoc);
+
       // Use GPT-3 to translate the directions into plain text
-      let context = "\npath: " + path;
-      answer = await GenerateChat(model, directionPrefix + context + "\n" + chatLog, start, restart, stop + ".");
+      let verbalPath = "\npath: " + path[0];
+      answer = await GenerateChat(model, directionPrefix  + "\n" + chatLog + verbalPath, start, restart, stop + ".");
       if (answer != null) {
         chatLog += answer[1];
         answer = answer[0];
       }else{
         answer = "I apologize, but I seem to be having some technical difficulties! Please enjoy the museum while the code monkeys fix me!";
       }
+
+      // Output the map
 
       startLoc = "N/A";
       endLoc = "N/A";
