@@ -32,7 +32,7 @@ function buildGraph() {
   WASHROOM.addNeighbour(FIRST_EXHIBIT, 4.5);
   FIRST_EXHIBIT.addNeighbour(E1_A1, 4.5);
   FIRST_EXHIBIT.addNeighbour(E1_A2, 4);
-  // FIRST_EXHIBIT.addNeighbour(E1_A3, 6);
+  FIRST_EXHIBIT.addNeighbour(E1_A3, 6);
   FIRST_EXHIBIT.addNeighbour(E1_A4, 8);
   FIRST_EXHIBIT.addNeighbour(E1_A5, 10);
   FIRST_EXHIBIT.addNeighbour(LS1, 12);
