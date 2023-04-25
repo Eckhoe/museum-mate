@@ -108,6 +108,10 @@ function aStar(source, dest) {
         }
       }
     }
+    // Check if there are no more nodes to evaluate and the current node is not the destination node
+    if (openSet.length === 0 && current !== dest) {
+      throw new Error("No path found from source to destination");
+    }
   }
 }
 
@@ -211,6 +215,8 @@ function reconstructPath(cameFrom, current, dest) {
     finalPath.push([current.x, current.y]);
   }
 
+  temp = formattedPathForVisual();
+
   // Return a natual language path
   return getCardinality(finalPath);
 }
@@ -226,7 +232,7 @@ function getLowestInOpenSet(openSet, dest) {
 
 function getPath(source, dest) {
   resetScores();
-  finalPath = aStar(eval(source), eval(dest)).reverse();
+  finalPath = aStar(eval(source), eval(dest));
   return finalPath;
 }
 
@@ -241,8 +247,8 @@ function formattedPathForVisual() {
 }
 
 function resetScores() {
-  ENTERANCE.f = Infinity; //F-score
-  ENTERANCE.g = Infinity; //G-score
+  ENTRANCE.f = Infinity; //F-score
+  ENTRANCE.g = Infinity; //G-score
   DESK.f = Infinity; //F-score
   DESK.g = Infinity; //G-score
   WASHROOM.f = Infinity; //F-score
