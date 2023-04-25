@@ -11,7 +11,7 @@
 .text-Guest {
     text-align: right;
     border-radius: 25px;
-    background: white;
+    background: #BBADBE;
     color: black;
     padding: 15px;
     margin: 10px;
@@ -21,10 +21,11 @@
 .text-MuseumMate {
     text-align: left;
     border-radius: 25px;
-    background: #3498DB;
+    background: #2A3C2C;
     padding: 15px;
     margin: 10px;
     position: relative;
+    color: #E6DBC5;
 }
 
 .text-Guest,
@@ -87,10 +88,11 @@
 
 .chatbot-components {
     padding: 10px;
-    border: 2px solid white;
+    border: 2px solid #BBADBE;
     border-radius: 25px;
     background-color: #333;
     background-color: rgba(0, 0, 0, 0.75);
+    max-width: 800px;
 }
 
 .chatbot-header {
@@ -119,18 +121,18 @@
     bottom: 30px;
     right: 30px;
     position: fixed;
-    color: white;
+    color: #E6DBC5;
     padding: 30px;
     cursor: pointer;
-    border: 2px solid white;
+    border: 2px solid black;
     border-radius: 25px;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: #2A3C2C; /* rgba(0, 0, 0, 0.5) */
     font-weight: bold;
 }
 
 .chatbot-toggle:hover {
-    background-color: white;
-    color: black;
+    background-color: #E6DBC5;
+    color: #2A3C2C;
     font-weight: bold;
     border: 2px solid black;
 }

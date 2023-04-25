@@ -1,9 +1,4 @@
-.home {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    width: 75%;
-}
+
 
 .container {
     display: flex;
@@ -59,7 +54,6 @@
     align-items: center;
     width: 100%;
     height: 200px;
-    background-color: #F5F5F5;
 }
 
 .center img {
@@ -73,13 +67,11 @@
     align-items: center;
     width: 100%;
     margin-top: 20px;
-    
 }
 
 .row div {
     width: 100%;
     padding: 20px;
-    border: 2px solid #ddd;
     margin-bottom: 20px;
     box-sizing: border-box;
     border-radius: 10px;
@@ -98,29 +90,18 @@
 .row table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 70px;
+    margin-bottom: 10px;
 }
 
-
 .row table td {
-    padding: 10px;
+    padding: 5px;
     text-align: center;
-    border: 3px solid #070404;
-    font-size: larger;
-    color: #00244a;
-    background-color:  whitesmoke;
-    font-weight: 700;
 }
 
 .row p {
     font-size: 1rem;
     margin-bottom: 10px;
 }
-
-.text{
-    font-size: 1.2rem;
-}
-
 
 @media screen and (min-width: 768px) {
     .container {
@@ -153,14 +134,180 @@
         margin-right: 20px;
     }
 
-    
     .row h2 {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
         margin-bottom: 15px;
     }
 
     .row p {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         margin-bottom: 15px;
     }
+}
+
+/* test */
+.home {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 120%;
+}
+
+.half-section {
+    display: flex;
+    height: 50%;
+    width: 100%;
+}
+
+.nav-row {
+    height: 60px;
+    width: 100%;
+    background-color: #BBADBE;
+    color: #2A3C2C;
+    text-align: center;
+    padding: 0 100px;
+    margin-left: -100px;
+}
+
+.left-half {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    color: #2A3C2C;
+
+}
+
+.right-half {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    border: 2px solid #2A3C2C;
+    background-image: url("/public/background2.jpg");
+    background-size: cover;
+    background-position: center center;
+}
+
+.center-mobile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: auto;
+    border: 2px solid #2A3C2C;
+    background-image: url("/public/background2.jpg");
+    background-size: cover;
+    background-position: center center;
+    border-radius: 20px;
+}
+
+.center-img {
+    width: 50%;
+    padding: 25px;
+    margin: 25px;
+    text-align: end;
+    font-weight: bold;
+    color: white;
+}
+
+.text {
+    font-family: Abril Fatface;
+}
+
+.quarter-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 25%;
+    height: 100%;
+    border: 2px solid white;
+    background-color: #333;
+    color: white;
+}
+
+.top-left-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #2A3C2C;
+    padding: 20px;
+    border-radius: 20px;
+    color: #F6E966;
+    font-size: 3rem;
+}
+
+.top-right-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    width: 90%;
+    height: 90%;
+}
+
+/* grids */
+.box-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    grid-gap: 10px;
+    color: #2A3C2C;
+    width: 95%;
+}
+
+.top-left {
+    grid-row: 1 / 2;
+    grid-column: 1 / 2;
+    border: 2px solid #2A3C2C;
+}
+
+.top-right {
+    grid-row: 1 / 2;
+    grid-column: 2 / 3;
+    border: 2px solid #2A3C2C;
+}
+
+.bottom-left {
+    grid-row: 2 / 3;
+    grid-column: 1 / 2;
+    border: 2px solid #2A3C2C;
+}
+
+.bottom-right {
+    grid-row: 2 / 3;
+    grid-column: 2 / 3;
+    border: 2px solid #2A3C2C;
+}
+
+
+.grid-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #2A3C2C;
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.text-area {
+    font-size: 1.1rem;
+    text-align: center;
 }

@@ -4,18 +4,11 @@
   min-height: 100vh;
   justify-content: center;
   flex-wrap: wrap;
-  color: #00244A;
-  background-color: var(--container-corvid-background-color,rgba(var(var(92,109,94),var(230,219,197)),var(--alpha-bg,1)));
-  border: var(--container-corvid-border-width,var(0px,1px)) solid var(--container-corvid-border-color,rgba(var(var(92,109,94),var(230,219,197)),var(0,1)));
-  background-color: #e6dbc5;
+  color: #2A3C2C;
+  background-color: #E6DBC5; /* #E6DBC5  #404854*/
+  position: relative;
+  overflow: auto;
 }
-
-.chatbot-toggle{
-  background-color: #00244ab9;
-  
-}
-
-
 .continue-button{
   display: block;
 }
@@ -48,11 +41,11 @@ input{
 button{
   margin:0.25rem 0;
   border: none;
-  background-color: #00244A;
+  background-color: white;
   padding: 20px;
   border-radius: 10px;
   cursor: pointer;
-  color:white;
+  color:#313639;
 }
 
 .input-group{
