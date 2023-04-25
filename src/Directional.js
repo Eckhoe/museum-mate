@@ -213,9 +213,6 @@ function naturalDir(path) {
 
 // THIS IS NOW NEEDED AS IT IS WHERE THE CARDINALITY IS DETERMINED
 function reconstructPath(cameFrom, current, dest) {
-  let vocalPath = [];
-  let visualPath = [];
-
   vocalPath.push([dest.x, dest.y]);
   visualPath.push(dest.name);
 
@@ -225,9 +222,9 @@ function reconstructPath(cameFrom, current, dest) {
     visualPath.push(current.name);
   }
 
+  // Get the verbal path
   vocalPath = getCardinality(vocalPath);
-  visualPath = formattedPathForVisual(visualPath);
-
+  
   // Return a natual language path
   return [vocalPath, visualPath];
 }
@@ -247,17 +244,20 @@ function getPath(source, dest) {
   return finalPath;
 }
 
-function formattedPathForVisual(path) {
+function formattedPathForVisual() {
   let formatted = [];
-  for (let i = 0; i < path.length - 1; i++) {
-    formatted.push(`public/map_images/${path[i].name}-${path[i + 1].name}.png`);
-    formatted.push(`public/map_images/${path[i + 1].name}-${path[i].name}.png`);
+  for (let i = 0; i < visualPath.length - 1; i++) {
+    formatted.push(`public/map_images/${visualPath[i]}-${visualPath[i + 1]}.png`);
+    formatted.push(`public/map_images/${visualPath[i + 1]}-${visualPath[i]}.png`);
     //Adds both possible path names to the formatted array. Will handle inside the Map Generation
   }
   return formatted;
 }
 
 function resetScores() {
+  vocalPath = [];
+  visualPath = [];
+
   ENTRANCE.f = Infinity; //F-score
   ENTRANCE.g = Infinity; //G-score
   DESK.f = Infinity; //F-score
@@ -348,6 +348,9 @@ let E3_A2 = new Node("E3_A2", -19.5, -6);
 let E3_A3 = new Node("E3_A3", -19.5, 0);
 let E3_A4 = new Node("E3_A4", -21, 4.5);
 let E3_A5 = new Node("E3_A5", -25, 3);
+
+let vocalPath = [];
+let visualPath = [];
 
 buildGraph();
 

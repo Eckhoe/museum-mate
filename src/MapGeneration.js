@@ -2,7 +2,7 @@ import { formattedPathForVisual } from "./Directional";
 const sharp = require("sharp");
 const fs = require("fs");
 
-async function merge() {
+export async function merge() {
   try {
     await sharp("public/map_images/Base_Map.png")
       .composite(buildCompositeList(formattedPathForVisual()))
