@@ -1,5 +1,5 @@
 import { formattedPathForVisual } from "./Directional";
-const sharp = require("sharp");
+//const sharp = require("sharp");
 const fs = require("fs");
 
 export async function merge() {
