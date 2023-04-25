@@ -32,7 +32,7 @@ function buildGraph() {
   WASHROOM.addNeighbour(FIRST_EXHIBIT, 4.5);
   FIRST_EXHIBIT.addNeighbour(E1_A1, 4.5);
   FIRST_EXHIBIT.addNeighbour(E1_A2, 4);
-  FIRST_EXHIBIT.addNeighbour(E1_A3, 6);
+  // FIRST_EXHIBIT.addNeighbour(E1_A3, 6);
   FIRST_EXHIBIT.addNeighbour(E1_A4, 8);
   FIRST_EXHIBIT.addNeighbour(E1_A5, 10);
   FIRST_EXHIBIT.addNeighbour(LS1, 12);
@@ -112,31 +112,31 @@ function aStar(source, dest) {
 }
 
 // This finds the cardinality of the current transition from x and y coordinates
-function getCardinality(path){
+function getCardinality(path) {
   let dirPath = [];
 
   // Get the cardinality by comparing the vectors of two connected nodes in the list radially
-  for(let i = path.length - 1; i > 0; i--){
+  for (let i = path.length - 1; i > 0; i--) {
     let A = path[i];
-    let B = path[i-1];
+    let B = path[i - 1];
     let dx = B[0] - A[0];
     let dy = B[1] - A[1];
     let angle = Math.atan2(dx, dy);
-    if (angle > -Math.PI/8 && angle <= Math.PI/8) {
+    if (angle > -Math.PI / 8 && angle <= Math.PI / 8) {
       dirPath[path.length - i] = "east";
-    } else if (angle > Math.PI/8 && angle <= 3*Math.PI/8) {
+    } else if (angle > Math.PI / 8 && angle <= (3 * Math.PI) / 8) {
       dirPath[path.length - i] = "northeast";
-    } else if (angle > 3*Math.PI/8 && angle <= 5*Math.PI/8) {
+    } else if (angle > (3 * Math.PI) / 8 && angle <= (5 * Math.PI) / 8) {
       dirPath[path.length - i] = "north";
-    } else if (angle > 5*Math.PI/8 && angle <= 7*Math.PI/8) {
+    } else if (angle > (5 * Math.PI) / 8 && angle <= (7 * Math.PI) / 8) {
       dirPath[path.length - i] = "northwest";
-    } else if (angle > 7*Math.PI/8 || angle <= -7*Math.PI/8) {
+    } else if (angle > (7 * Math.PI) / 8 || angle <= (-7 * Math.PI) / 8) {
       dirPath[path.length - i] = "west";
-    } else if (angle > -7*Math.PI/8 && angle <= -5*Math.PI/8) {
+    } else if (angle > (-7 * Math.PI) / 8 && angle <= (-5 * Math.PI) / 8) {
       dirPath[path.length - i] = "southwest";
-    } else if (angle > -5*Math.PI/8 && angle <= -3*Math.PI/8) {
+    } else if (angle > (-5 * Math.PI) / 8 && angle <= (-3 * Math.PI) / 8) {
       dirPath[path.length - i] = "south";
-    } else if (angle > -3*Math.PI/8 && angle <= -Math.PI/8) {
+    } else if (angle > (-3 * Math.PI) / 8 && angle <= -Math.PI / 8) {
       dirPath[path.length - i] = "southeast";
     }
   }
@@ -146,24 +146,33 @@ function getCardinality(path){
 }
 
 // This translates to natural language directions from cardinality
-function naturalDir(path){
-  const card = ["north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest"];
+function naturalDir(path) {
+  const card = [
+    "north",
+    "northeast",
+    "east",
+    "southeast",
+    "south",
+    "southwest",
+    "west",
+    "northwest",
+  ];
   let dirPath = [];
 
   // Get the natural language directions by comparing the relative position of the cardinaltiy array to the nodes
-  for(let i = 0; i < path.length - 1; i++){
+  for (let i = 0; i < path.length - 1; i++) {
     let cur = card.indexOf(i);
-    let next = card.indexOf(i+1);
+    let next = card.indexOf(i + 1);
     let diff = next - cur;
     let modDiff = ((diff % 8) + 8) % 8; // This seems complex but it is to ensure clockwise evaluation (non negative) and between 0 and 7
-    switch(modDiff){
+    switch (modDiff) {
       case 0:
         // The conditional prevents repeating straight
-        if(i > 0){
-          if(dirPath[i-1] != "straight"){
+        if (i > 0) {
+          if (dirPath[i - 1] != "straight") {
             dirPath.push("straight");
           }
-        }else{
+        } else {
           dirPath.push("straight");
         }
         break;
@@ -216,71 +225,78 @@ function getLowestInOpenSet(openSet, dest) {
 }
 
 function getPath(source, dest) {
-  // Reinit
-  ENTRANCE.f = Infinity;
-  DESK.f = Infinity;
-  WASHROOM.f = Infinity;
-  FIRST_EXHIBIT.f = Infinity;
-  E1_A1.f = Infinity;
-  E1_A2.f = Infinity;
-  E1_A3.f = Infinity;
-  E1_A4.f = Infinity;
-  E1_A5.f = Infinity;
-  LS1.f = Infinity;
-
-  SECOND_EXHIBIT.f = Infinity;
-  E2_A1.f = Infinity;
-  E2_A2.f = Infinity;
-  E2_A3.f = Infinity;
-  E2_A4.f = Infinity;
-  E2_A5.f = Infinity;
-  LS2 = Infinity;
-
-  US1.f = Infinity;
-  US2.f = Infinity;
-  C1.f = Infinity;
-  C2.f = Infinity;
-  C3.f = Infinity;
-  E3_A1.f = Infinity;
-  E3_A2.f = Infinity;
-  E3_A3.f = Infinity;
-  E3_A4.f = Infinity;
-  E3_A5.f = Infinity;
-
-  ENTRANCE.g = Infinity;
-  DESK.g = Infinity;
-  WASHROOM.g = Infinity;
-  FIRST_EXHIBIT.g = Infinity;
-  E1_A1.g = Infinity;
-  E1_A2.g = Infinity;
-  E1_A3.g = Infinity;
-  E1_A4.g = Infinity;
-  E1_A5.g = Infinity;
-  LS1.g = Infinity;
-
-  SECOND_EXHIBIT.g = Infinity;
-  E2_A1.g = Infinity;
-  E2_A2.g = Infinity;
-  E2_A3.g = Infinity;
-  E2_A4.g = Infinity;
-  E2_A5.g = Infinity;
-  LS2 = Infinity;
-
-  US1.g = Infinity;
-  US2.g = Infinity;
-  C1.g = Infinity;
-  C2.g = Infinity;
-  C3.g = Infinity;
-  E3_A1.g = Infinity;
-  E3_A2.g = Infinity;
-  E3_A3.g = Infinity;
-  E3_A4.g = Infinity;
-  E3_A5.g = Infinity;
-
-  return aStar(eval(source), eval(dest));
+  resetScores();
+  finalPath = aStar(eval(source), eval(dest)).reverse();
+  return finalPath;
 }
 
-module.exports = { getPath };
+function formattedPathForVisual() {
+  let formatted = [];
+  for (let i = 0; i < finalPath.length - 1; i++) {
+    formatted.push(`public/map_images/${finalPath[i]}-${finalPath[i + 1]}.png`);
+    formatted.push(`public/map_images/${finalPath[i + 1]}-${finalPath[i]}.png`);
+    //Adds both possible path names to the formatted array. Will handle inside the Map Generation
+  }
+  return formatted;
+}
+
+function resetScores() {
+  ENTERANCE.f = Infinity; //F-score
+  ENTERANCE.g = Infinity; //G-score
+  DESK.f = Infinity; //F-score
+  DESK.g = Infinity; //G-score
+  WASHROOM.f = Infinity; //F-score
+  WASHROOM.g = Infinity; //G-score
+
+  FIRST_EXHIBIT.f = Infinity; //F-score
+  FIRST_EXHIBIT.g = Infinity; //G-score
+  E1_A1.f = Infinity; //F-score
+  E1_A1.g = Infinity; //G-score
+  E1_A2.f = Infinity; //F-score
+  E1_A2.g = Infinity; //G-score
+  E1_A3.f = Infinity; //F-score
+  E1_A3.g = Infinity; //G-score
+  E1_A4.f = Infinity; //F-score
+  E1_A4.g = Infinity; //G-score
+  E1_A5.f = Infinity; //F-score
+  E1_A5.g = Infinity; //G-score
+  LS1.f = Infinity; //F-score
+  LS1.g = Infinity; //G-score
+
+  SECOND_EXHIBIT.f = Infinity; //F-score
+  SECOND_EXHIBIT.g = Infinity; //G-score
+  E2_A1.f = Infinity; //F-score
+  E2_A1.g = Infinity; //G-score
+  E2_A2.f = Infinity; //F-score
+  E2_A2.g = Infinity; //G-score
+  E2_A3.f = Infinity; //F-score
+  E2_A3.g = Infinity; //G-score
+  E2_A4.f = Infinity; //F-score
+  E2_A4.g = Infinity; //G-score
+  E2_A5.f = Infinity; //F-score
+  E2_A5.g = Infinity; //G-score
+  LS2.f = Infinity; //F-score
+  LS2.g = Infinity; //G-score
+
+  E3_A1.f = Infinity; //F-score
+  E3_A1.g = Infinity; //G-score
+  E3_A2.f = Infinity; //F-score
+  E3_A2.g = Infinity; //G-score
+  E3_A3.f = Infinity; //F-score
+  E3_A3.g = Infinity; //G-score
+  E3_A4.f = Infinity; //F-score
+  E3_A4.g = Infinity; //G-score
+  E3_A5.f = Infinity; //F-score
+  E3_A5.g = Infinity; //G-score
+  C1.f = Infinity; //F-score
+  C1.g = Infinity; //G-score
+  C2.f = Infinity; //F-score
+  C2.g = Infinity; //G-score
+  C3.f = Infinity; //F-score
+  C3.g = Infinity; //G-score
+}
+
+module.exports = { getPath, formattedPathForVisual };
 
 let ENTRANCE = new Node("ENTRANCE", 11, -3);
 let DESK = new Node("DESK", 14, 0.5);
@@ -311,6 +327,8 @@ let E3_A2 = new Node("E3_A2", -19.5, -6);
 let E3_A3 = new Node("E3_A3", -19.5, 0);
 let E3_A4 = new Node("E3_A4", -21, 4.5);
 let E3_A5 = new Node("E3_A5", -25, 3);
+
+let finalPath = [];
 
 buildGraph();
 
