@@ -11,7 +11,13 @@ import {Chatbot} from "./Chatbot";
 const NavigationBar = () => {
     return (
         <>
+
+        
             <div className="navbar">
+            <div className="logo">
+                <img src= '/logo.svg' alt="logo"/>
+                 </div>
+                
                 <Link to="/" className="nav-option">Home</Link>
                 <Link to="/directions" className="nav-option">Directions</Link>
                 <Link to="/chatbot" className="nav-option">Chat-Bot</Link>

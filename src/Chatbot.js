@@ -1,14 +1,14 @@
 import {
-  ConfirmLocation,
   RemoveLines,
-  CalcSim,
+  SearchDB,
   _queryPrefix,
   _directionPrefix,
   _museumInfo,
-  _musIdentExamples,
   _conTypeExamples,
   _subIdentExamples,
   _startPrompt,
+  _startIdentExamples,
+  _endIdentExamples
 } from "./ChatbotHelper";
 import SpeechRecognition, {
   useSpeechRecognition,
@@ -17,27 +17,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { LanguageSelector, Loading } from "./Components";
 import { GenerateBasic, GenerateChat } from "./GPT-3";
 import { useSpeechSynthesis } from "react-speech-kit";
+import { getPath } from "./Directional.js";
 import "./ChatBot.css";
 import "./App.css";
-import { db } from "./Firebase";
-import { collection, query, where, getDocs, doc } from "firebase/firestore";
 //import $ from "jquery";
-
-// Separate import of firebase database to get chatbot code working
-/* import * as firebase from "firebase/app";
-import "firebase/database";
-const firebaseConfig = {
-    apiKey: "AIzaSyDXd3SXujiOC-0iYxe4E0gg2pfv5NUJaWI",
-    authDomain: "museummate-e06b8.firebaseapp.com",
-    databaseURL: "https://museummate-e06b8-default-rtdb.firebaseio.com",
-    projectId: "museummate-e06b8",
-    storageBucket: "museummate-e06b8.appspot.com",
-    messagingSenderId: "607698800264",
-    appId: "1:607698800264:web:4c20dd01fe7e9ededcd93d",
-    measurementId: "G-JW69LNL7LD"
-};
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database(); */
 
 /*
  * This class implements the MuseumMate chatbot using calls to GPT-3 for text generation and React JS for I/O
@@ -47,37 +30,19 @@ const museumInfo = _museumInfo;
 const startPrompt = _startPrompt;
 const conTypeExamples = _conTypeExamples;
 const subIdentExamples = _subIdentExamples;
-const musIdentExamples = _musIdentExamples;
-const locations = [
-  "Lobby",
-  "Restroom",
-  "Security Office",
-  "Dinosaur Exhibit",
-  "King Tut Exhibit",
-  "Ancient Greek Exhibit",
-];
-const exhibits = [
-  "Dinosaur Exhibit",
-  "King Tut Exhibit",
-  "Ancient Greek Exhibit",
-];
-const museumTopics = [
-  "MuseumMate",
-  "Niagara on the Lake (NOTL) Museum",
-  "Operating Hours",
-  "Address",
-  "Contact",
-  "Facilities",
-];
+const startIdentExamples = _startIdentExamples;
+const endIdentExamples = _endIdentExamples;
 const model = "text-davinci-003";
 const restart = "\nGuest: ";
 const start = "\nMuseumMate:";
 const stop = [" Guest:", " MuseumMate:"];
-const artifactRef = collection(db, "artifacts");
+const staticLocations = ["Entrance", "Desk", "Washroom"];
 let directionPrefix = _directionPrefix;
 let queryPrefix = _queryPrefix;
 let isDirections = false;
 let lang = "English";
+let startLoc = "N/A";
+let endLoc = "N/A";
 let chatLog =
   "MuseumMate: Hi! I am MuseumMate and I can provide information on all the exhibits around you as well as directions to anywhere in the museum!\nGuest:";
 
@@ -244,9 +209,8 @@ export const Chatbot = () => {
   // Add any other chatbot suggestions to array
   const suggestions = [
     "Here are some suggestions you can ask:",
-    "Where is the museum?",
+    "What is the museum address?",
     "What are some famous exhibits?",
-    "Are there any events approaching?",
     "What are the hours of operation?",
   ];
 
@@ -285,7 +249,7 @@ export const Chatbot = () => {
     setInput(transcript);
   }, [transcript]);
 
-// Sets chatbot popup default to active if on chatbot page
+  // Sets chatbot popup default to active if on chatbot page
   //test: if (currentUrl === "http://localhost:3000/chatbot") {
   //live: if (currentUrl === "http://museum-mate-v1.vercel.app") {
   useEffect(() => {
@@ -316,66 +280,66 @@ export const Chatbot = () => {
   };
 
   return (
-      <div>
-        {toggleOn ? (
-            <div className="chatbot-container">
+    <div>
+      {toggleOn ? (
+        <div className="chatbot-container">
 
-              <div className="chatbot-components">
-                <div className="chatbot-header">
-                  <LanguageSelector onlanguagechange={handleLanguageChange} />
-                  <h1 className="chatbot-title">ChatBot</h1>
-                  <button onClick={() => setToggle(false)}>
-                    <img src="https://img.icons8.com/external-tanah-basah-basic-outline-tanah-basah/14/null/external-minimize-arrows-tanah-basah-basic-outline-tanah-basah-2.png" alt="Minimize"/>
-                  </button>
-                </div>
-
-                <div className="text-list">
-                  {text.map((text, index) => (
-                      <Text key={index} text={text} onTextClick={handleTextClick} />
-                  ))}
-                  <Loader />
-                  <div ref={textListEndRef}></div>
-                </div>
-
-                <div className="text-form">
-                  <form
-                      className="form-container"
-                      method="submit"
-                      onSubmit={handleSubmit}
-                      onReset={handleReset}
-                  >
-                    <input className="form-input"
-                           value={input}
-                           maxLength="100"
-                        //size="100"
-                           onChange={(event) => setInput(event.target.value)}
-                           placeholder="Enter Text..."
-                    />
-                    <button className="chatbot-button" type="submit">
-                      <img src="https://img.icons8.com/external-solidglyph-m-oki-orlando/14/null/external-Enter-basic-ui-solidglyph-m-oki-orlando.png" alt="Submit"/>
-                    </button>
-                    <button className="chatbot-button" type="reset">
-                      <img src="https://img.icons8.com/sf-black/14/null/recurring-appointment.png" alt="Reset"/>
-                    </button>
-                    <button className="chatbot-button" type="button" onClick={SpeechRecognition.startListening} >
-                      <img src="https://img.icons8.com/material-rounded/14/null/microphone.png" alt="Mic Start"/>
-                    </button>
-                    <button className={ttsOn ? "chatbot-button-on" : "chatbot-button"} type="button" onClick={handleTTS}>
-                      {ttsOn ? <img src="https://img.icons8.com/metro/14/null/no-audio.png" alt="Speech off"/>
-                          : <img src="https://img.icons8.com/metro/14/null/high-volume.png" alt="Speech on"/>}
-
-                    </button>
-                  </form>
-                </div>
-              </div>
+          <div className="chatbot-components">
+            <div className="chatbot-header">
+              <LanguageSelector onlanguagechange={handleLanguageChange} />
+              <h1 className="chatbot-title">ChatBot</h1>
+              <button onClick={() => setToggle(false)}>
+                <img src="https://img.icons8.com/external-tanah-basah-basic-outline-tanah-basah/14/null/external-minimize-arrows-tanah-basah-basic-outline-tanah-basah-2.png" alt="Minimize" />
+              </button>
             </div>
 
-        ) : (
-            <div className="chatbot-toggle" onClick={() => setToggle(true)}>
-              ChatBot
+            <div className="text-list">
+              {text.map((text, index) => (
+                <Text key={index} text={text} onTextClick={handleTextClick} />
+              ))}
+              <Loader />
+              <div ref={textListEndRef}></div>
             </div>
-        )}
-      </div>
+
+            <div className="text-form">
+              <form
+                className="form-container"
+                method="submit"
+                onSubmit={handleSubmit}
+                onReset={handleReset}
+              >
+                <input className="form-input"
+                  value={input}
+                  maxLength="100"
+                  //size="100"
+                  onChange={(event) => setInput(event.target.value)}
+                  placeholder="Enter Text..."
+                />
+                <button className="chatbot-button" type="submit">
+                  <img src="https://img.icons8.com/external-solidglyph-m-oki-orlando/14/null/external-Enter-basic-ui-solidglyph-m-oki-orlando.png" alt="Submit" />
+                </button>
+                <button className="chatbot-button" type="reset">
+                  <img src="https://img.icons8.com/sf-black/14/null/recurring-appointment.png" alt="Reset" />
+                </button>
+                <button className="chatbot-button" type="button" onClick={SpeechRecognition.startListening} >
+                  <img src="https://img.icons8.com/material-rounded/14/null/microphone.png" alt="Mic Start" />
+                </button>
+                <button className={ttsOn ? "chatbot-button-on" : "chatbot-button"} type="button" onClick={handleTTS}>
+                  {ttsOn ? <img src="https://img.icons8.com/metro/14/null/no-audio.png" alt="Speech off" />
+                    : <img src="https://img.icons8.com/metro/14/null/high-volume.png" alt="Speech on" />}
+
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+      ) : (
+        <div className="chatbot-toggle" onClick={() => setToggle(true)}>
+          ChatBot
+        </div>
+      )}
+    </div>
   );
 };
 
@@ -385,130 +349,122 @@ export const Chatbot = () => {
 export const chat = async (input) => {
   // Local variables
   let answer = "";
-  let photo = "";
   let response = [];
+  let information = [];
+  let conType = "";
 
-  // Indicate the type of conversation
-  let conType = await GenerateBasic(
-    model,
-    "Reply Yes if the following input is asking for direction or No if it is not:\n" +
+  if (startLoc.includes("N/A") && endLoc.includes("N/A")){
+    // Indicate the type of conversation
+    conType = await GenerateBasic(
+      model,
+      "Determine if the input is asking for directions or guidance on how to navigate from one location to another. Reply 'Yes' if it is, or 'No' if it is not. The input could be related to any type of location, such as public places, buildings, rooms, or landmarks.\n" +
       conTypeExamples +
       "Input: " +
       input +
       "\nOutput:"
-  );
-  isDirections = false;
-
+    );
+  }
+  else{
+    conType = "Yes";
+  }
+  isDirections = conType.includes("Yes");
   if (isDirections) {
     // Add user intput to the prompt
     chatLog = chatLog + input;
 
+    //Test: How do I get to the entrance from the 1812 exhibit?
+    //Test: How do I get to the Mary Ann McKay Death exhibit from the desk?
+
     // Use GPT-3 to find the starting and ending locations within the user input and confirm them (i.e., spelling issues)
-    // TODO: Change example data
-    let departure = await GenerateBasic(
-      model,
-      "Return just the departure point from the following text: " + input
-    );
-    departure = await ConfirmLocation(locations, departure, locIdentExamples);
-    departure = RemoveLines(departure);
-    let destination = await GenerateBasic(
-      model,
-      "Return just the destination point from the following text: " + input
-    );
-    destination = await ConfirmLocation(
-      locations,
-      destination,
-      locIdentExamples
-    );
-    destination = RemoveLines(destination);
-
-    //THIS IS WHERE I AM GOING TO ADD THE CODE
-
-    let curDirect = "";
-    // Ensure you get the start and endpoints
-    if (locations.includes(departure) && locations.includes(destination)) {
-      // TO DO: Output the points to the path finding algorithm and recieve the directions
-      // Note: The code below is temporary to test the directions, replace later.
-      const tempDirections = [
-        "right(King Tut Exhibit), left, straight, right, straight, left(Security Office)",
-        "straight, right, left, upstairs, right(Ancient Greek Exhibit), downstairs(Dinosaur Exhibit)",
-        "left(Restroom), straight, right, straight(Lobby)",
-      ];
-      const direction =
-        tempDirections[Math.floor(Math.random() * tempDirections.length)];
-      curDirect = directionPrefix + direction;
-    } else {
-      curDirect =
-        "Rephrase this: I'm sorry! I couldn't quite figure out where you are and where you are going (some circuits must have crossed). Can you please let me know your current location and where you are trying to go?";
+    if (startLoc.includes("N/A")) {
+      startLoc = await GenerateBasic(model, "Return just the StartPoint from the following Prompt. If there is no StartPoint return N/A:\n" +
+        startIdentExamples + "Prompt: " + input + "\nStartPoint: ");
     }
+    if (endLoc.includes("N/A")) {
+      endLoc = await GenerateBasic(model, "Return just the EndPoint from the following Prompt. If there is no EndPoint return N/A:\n" +
+        endIdentExamples + "Prompt: " + input + "\nEndPoint: ");
+    }
+    if (!startLoc.includes("N/A") && !endLoc.includes("N/A")) {
+      // Check for static locations, then, if needed, check the database for locations
+      let temp = await GenerateBasic(model, "Return just the location from the following that matches closest to the input. If none match return other:\n" +
+        "Locations: " + staticLocations + "\nInput: " + startLoc + "\nOutput: ");
+      if ((temp.toLowerCase()).includes("other")) {
+        temp = await SearchDB(startLoc);
+        startLoc = temp[2];
+      } else {
+        startLoc = RemoveLines(temp.toUpperCase());
+      }
+      temp = await GenerateBasic(model, "Return just the location from the following that matches closest to the input. If none match return other:\n" +
+        "Locations: " + staticLocations + "\nInput: " + endLoc + "\nOutput: ");
+      if ((temp.toLowerCase()).includes("other")) {
+        temp = await SearchDB(endLoc);
+        endLoc = temp[2];
+      } else {
+        endLoc = RemoveLines(temp.toUpperCase());
+      }
 
-    // Use GPT-3 to translate the directions into plain text
-    answer = await GenerateBasic(model, curDirect);
-    chatLog = chatLog + answer;
-  } else {
+      // Run pathfinding algorithm
+      let path = await getPath(startLoc, endLoc);
+      // Use GPT-3 to translate the directions into plain text
+      let context = "\npath: " + path;
+      answer = await GenerateChat(model, directionPrefix + context + "\n" + chatLog, start, restart, stop + ".");
+      if (answer != null) {
+        chatLog += answer[1];
+        answer = answer[0];
+      }else{
+        answer = "I apologize, but I seem to be having some technical difficulties! Please enjoy the museum while the code monkeys fix me!";
+      }
+
+      startLoc = "N/A";
+      endLoc = "N/A";
+    }else if(startLoc.includes("N/A")){
+      answer = "I'm sorry! I didn't quite catch all of that. Could you please tell me where you are currently?";
+    }else if(endLoc.includes("N/A")){
+      answer = "I'm sorry! I didn't quite catch all of that. Could you please tell me where you are trying to go?";
+    }
+  }
+  else {
     // Add user intput to the prompt
     chatLog = chatLog + input;
 
     // Use GPT-3 to extract the subject of the conversation
-    let subject = await GenerateBasic(
-      model,
-      "Determine the subject or category of the provided text. The input prompts can be in the form of a question or statement, and the model should respond with the most appropriate subject or category. Examples of valid input prompts and their corresponding outputs are:\n" +
-        subIdentExamples +
-        "Prompt: " +
-        input +
-        "Output:"
-    );
-    let min = Infinity;
-    let information = "";
+    let subject = await GenerateBasic(model, "Classify the subject or category of given text prompts, and generate appropriate outputs accordingly. Example input prompts can be in question or statement form and should elicit responses that identify the subject of conversation. Examples of valid input prompts and outputs are:\n"
+      + subIdentExamples + "Input: " + input + "\nOutput: ");
 
-    let temp = await ConfirmLocation(museumTopics, input, musIdentExamples);
+    // Note, searching is all done in lower case for accuracy
+    let temp = subject.toLowerCase();
+
     // First check if they are asking about the museum
-    museumInfo.forEach((index) => {
-      if (temp.includes(index[0])) {
-        information = index[1];
+    museumInfo.forEach(index => {
+      if (temp.includes(index[0].toLowerCase())) {
+        information[0] = index[1];
+        information[1] = "";
       }
-    });
+    })
 
     // If we aren't then run the database code
-    if (information == "") {
-      // Search the database for the closest matching GPTName to the user input and store the data in a 2Darray
-      const querySnapshot = await getDocs(artifactRef);
-      querySnapshot.forEach((doc) => {
-        let GPTName = doc.data().GPTName;
-        let Desc = doc.data().Description;
-        console.log(doc.data().Id);
-
-        // Use Levenshtein Distance to get a number metric for the closeness of string to the input and record the description
-        temp = CalcSim(subject, GPTName);
-
-        // We want the smallest value, meaning closest
-        if (temp < min) {
-          min = temp;
-          information = Desc;
-          photo = doc.data().images[0];
-        }
-      });
+    if (information.length == 0) {
+      // Check if it is just a general conversation
+      if (!temp.includes("general conversation")) {
+        information = await SearchDB(subject);
+      }
     }
 
-    answer = await GenerateChat(
-      model,
-      queryPrefix + "\nSource Material: " + information + "\n" + chatLog,
-      start,
-      restart,
-      stop + "."
-    );
-    chatLog += answer[1];
-    answer = answer[0];
+    let context = "\nSource Material: " + information[0];
+    answer = await GenerateChat(model, queryPrefix + context + "\n" + chatLog, start, restart, stop + ".");
+    if (answer != null) {
+      chatLog += answer[1];
+      answer = answer[0];
+    }else{
+      answer = "I apologize, but I seem to be having some technical difficulties! Please enjoy the museum while the code monkeys fix me!";
+    }
   }
 
   // Generate an output
   if (lang != "English") {
-    answer = await GenerateBasic(
-      model,
-      "Translate the following text into " + lang + ": " + answer
-    );
+    answer = await GenerateBasic(model, "Translate the following text into " + lang + ": " + answer);
   }
-  response = [answer, photo];
+  response = [answer, information[1]];
   return response;
 };
 

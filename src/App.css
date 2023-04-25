@@ -4,8 +4,10 @@
   min-height: 100vh;
   justify-content: center;
   flex-wrap: wrap;
-  color: white;
-  background-color: #404854;
+  color: #00244ae6;
+  background-color: #ebe6ded0; /* #E6DBC5  #404854*/
+  position: relative;
+  overflow: auto;
 }
 .continue-button{
   display: block;
@@ -43,7 +45,7 @@ button{
   padding: 20px;
   border-radius: 10px;
   cursor: pointer;
-  color:#313639;
+  color:#00244ae6;
 }
 
 .input-group{

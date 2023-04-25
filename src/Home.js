@@ -32,17 +32,20 @@ const Home = () => {
 
                     <div className="mobile-container">
                         <div className="mobile-header">
-                            <h1>Niagara On The Lake Museum</h1>
+                            <h1 className="top-left-box">Niagara-on-the-Lake Museum</h1>
                         </div>
 
-                        <div className="center">
+                        <div className="center-mobile">
                             <div className="center-img"></div>
                         </div>
+
 
                         <div className="row">
                             <div className="text">
                                 {introText}
                             </div>
+
+
                             <ImageChangerComponent/>
                         </div>
 
@@ -52,6 +55,19 @@ const Home = () => {
                                 {locationText}
                             </div>
                         </div>
+
+                        <h2 className="title">Indigenous History</h2>
+                        <p className="text-area">Explore the rich history of the Niagara region, from the early First Nations to their historic legacy.</p>
+
+                        <h2 className="title">War of 1812</h2>
+                        <p className="text-area">Discover the dramatic events and pivotal battles as well as the untold stories of bravery, sacrifice, and triumph.</p>
+
+                        <h2 className="title">Heritage Sites</h2>
+                        <p className="text-area">Learn about and explore a wide variety of local sites in the Niagara region that are full of history.</p>
+
+                        <h2 className="title">Events</h2>
+                        <p className="text-area">There are constant new events coming up at the museum, our chatbot can give you all the details!</p>
+
 
                         <div className="mobile-info">
                             <div className="mobile-hours">
@@ -97,11 +113,6 @@ const Home = () => {
                                 <p>Email: contact@nhsm.ca</p>
                             </div>
 
-                            <div className="mobile-events">
-                                <h2>Upcoming Events</h2>
-                                <p>No upcoming events at this time.</p>
-                            </div>
-
                             <div className="mobile-chat">
                                 <h2>Chatbot</h2>
                                 <div className="mobile-text">
@@ -109,76 +120,113 @@ const Home = () => {
                                 </div>
                             </div>
                         </div>
+                        <Footer/>
                     </div>
 
-                </> : <div>
+                </> : <div className="home">
 
                     <Chatbot/>
 
-                    <h1>Niagara On The Lake Museum</h1>
-                    <div className="center">
-                        <div className="center-img"></div>
+                    <div className="half-section">
+
+                        <div className="left-half">
+                            <h1 className="top-left-box">Niagara-on-the-Lake Museum</h1>
+                            <p className="text-area">{introText}</p>
+                        </div>
+
+                        <div className="right-half">
+                            <div className="top-right-box center"></div>
+                        </div>
+
                     </div>
 
-                    <div className="row">
-                        <ImageChangerComponent/>
-                        <div className="text">
-                            {introText}
-                        </div>
+                    <div className="nav-row">
+                        <h4>{chatbotText}</h4>
                     </div>
 
-                    <div className="row">
-                        <div className="text"> Hours
-                            <table>
-                                <tr>
-                                    <td>Monday</td>
-                                    <td>1pm - 5pm</td>
-                                </tr>
-                                <tr>
-                                    <td>Tuesday</td>
-                                    <td>1pm - 5pm</td>
-                                </tr>
-                                <tr>
-                                    <td>Wednesday</td>
-                                    <td>1pm - 5pm</td>
-                                </tr>
-                                <tr>
-                                    <td>Thursday</td>
-                                    <td>1pm - 5pm</td>
-                                </tr>
-                                <tr>
-                                    <td>Friday</td>
-                                    <td>1pm - 5pm</td>
-                                </tr>
-                                <tr>
-                                    <td>Saturday</td>
-                                    <td>1pm - 5pm</td>
-                                </tr>
-                                <tr>
-                                    <td>Sunday</td>
-                                    <td>1pm - 5pm</td>
-                                </tr>
-                            </table>
+                    <div className="half-section">
+
+                        <div className="left-half">
+                            <div className="top-right-box">
+                                <ImageChangerComponent/>
+                            </div>
                         </div>
-                        <div className="text">
-                            {locationText}
+
+                        <div className="right-half">
+
+                            <div className="box-grid">
+                                <div className="grid-item">
+                                    <h2 className="title">Indigenous History</h2>
+                                    <p className="text-area">Explore the rich history of the Niagara region, from the early First Nations to their historic legacy.</p>
+                                </div>
+                                <div className="grid-item">
+                                    <h2 className="title">War of 1812</h2>
+                                    <p className="text-area">Discover the dramatic events and pivotal battles as well as the untold stories of bravery, sacrifice, and triumph.</p>
+                                </div>
+                                <div className="grid-item">
+                                    <h2 className="title">Heritage Sites</h2>
+                                    <p className="text-area">Learn about and explore a wide variety of local sites in the Niagara region that are full of history.</p>
+                                </div>
+                                <div className="grid-item">
+                                    <h2 className="title">Events</h2>
+                                    <p className="text-area">There are constant new events coming up at the museum, our chatbot can give you all the details!</p>
+                                </div>
+                            </div>
+
                         </div>
+
                     </div>
 
-                    <div className="row">
-                        <div className="text">
-                            {chatbotText}
-                        </div>
-                        <div className="text">
-                            <p>43 Castlereagh St, Niagara-on-the-Lake, ON L0S 1J0 (maybe add map)</p>
-                            <p>Phone: (905) 468-3912</p>
-                            <p>Email: contact@nhsm.ca</p>
-                        </div>
+                    <div className="nav-row">
+                        <h4>{locationText}</h4>
                     </div>
+
+                    <div className="half-section">
+
+                        <div className="left-half">
+
+                            <div className="mobile-location">
+                                <h2>Location</h2>
+                                <p>43 Castlereagh St, Niagara-on-the-Lake, ON L0S 1J0</p>
+                                <p>Phone: (905) 468-3912</p>
+                                <p>Email: contact@nhsm.ca</p>
+
+                                <h2>Hours</h2>
+                                <p>The museum is currently open all week long from 1pm to 5pm</p>
+
+                                <h2>Admissions</h2>
+                                <p className="text-area">18 and under: free</p>
+                                <p className="text-area">Students: $2</p>
+                                <p className="text-area">Adults: $5</p>
+                                <p className="text-area">Seniors: $3</p>
+
+
+                            </div>
+                        </div>
+
+                        <div className="right-half">
+
+                                <iframe
+                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2905.962048121403!2d-79.0767329032104!3d43.25221719999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89d35f73ea17c31f%3A0xf975dbf3ff67d6c0!2sNiagara-on-the-Lake%20Museum!5e0!3m2!1sen!2sca!4v1682212922535!5m2!1sen!2sca"
+                                    width="600"
+                                    height="450"
+                                    allowFullScreen=""
+                                    loading="lazy"
+                                    referrerPolicy="no-referrer-when-downgrade"
+                                    style={{border: '0'}}
+                                />
+
+                        </div>
+
+                    </div>
+
+                    <div>
+                        <Footer/>
+                    </div>
+
                 </div>}
-
             </div>
-            <Footer/>
+
         </>
     )
 };
