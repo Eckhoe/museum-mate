@@ -11,21 +11,23 @@
 .text-Guest {
     text-align: right;
     border-radius: 25px;
-    background: #BBADBE;
+    background: #dbd2dd;
     color: black;
     padding: 15px;
     margin: 10px;
     position: relative;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 .text-MuseumMate {
     text-align: left;
     border-radius: 25px;
-    background: #2A3C2C;
+    background: #012c5a;
     padding: 15px;
     margin: 10px;
     position: relative;
-    color: #E6DBC5;
+    color: #ffffff;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 .text-Guest,
@@ -57,7 +59,7 @@
 }
 
 .text-image {
-    width: 90%;
+    width: 40%;
     height: auto;
     margin-top: 10px;
     background-size: cover;
@@ -100,6 +102,7 @@
     justify-content: space-between;
     align-items: center;
     text-align: center;
+    color: white;
 }
 
 .text-container {
@@ -126,13 +129,13 @@
     cursor: pointer;
     border: 2px solid black;
     border-radius: 25px;
-    background-color: #2A3C2C; /* rgba(0, 0, 0, 0.5) */
+    background-color: #00244af5; /* rgba(0, 0, 0, 0.5) */
     font-weight: bold;
 }
 
 .chatbot-toggle:hover {
     background-color: #E6DBC5;
-    color: #2A3C2C;
+    color: #00244ae6;
     font-weight: bold;
     border: 2px solid black;
 }
