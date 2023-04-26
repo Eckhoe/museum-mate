@@ -250,7 +250,6 @@ export const Chatbot = () => {
       toggleTTS(true);
       speak({ text: reply });
     }
-    console.log(ttsOn);
   };
 
   // toggle automatic text-to-speech on/off
@@ -260,17 +259,6 @@ export const Chatbot = () => {
   useEffect(() => {
     setInput(transcript);
   }, [transcript]);
-
-  // Sets chatbot popup default to active if on chatbot page
-  //test: if (currentUrl === "http://localhost:3000/chatbot") {
-  //live: if (currentUrl === "http://museum-mate-v1.vercel.app") {
-  useEffect(() => {
-    const currentUrl = window.location.href;
-    //console.log(currentUrl);
-    if (currentUrl === "http://museum-mate-v1.vercel.app") {
-      setToggle(true);
-    }
-  }, []);
 
   // Sets a loading animation while waiting for chabot response
   const Loader = () => {

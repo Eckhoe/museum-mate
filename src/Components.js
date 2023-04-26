@@ -161,10 +161,10 @@ const Footer = () => {
             <div className="footer">
                 <div className="footer-text">
                     <p onClick={() => openPopup("About", textMap.about)}>About</p>
-                    <p onClick={() => openPopup("Group information", textMap.groupInfo)}>Group information</p>
+                    <p onClick={() => openPopup("Group Information", textMap.groupInfo)}>Group Information</p>
                 </div>
                 <div className="footer-text">
-                    <p onClick={() => openPopup("Copyright information", textMap.copyright)}>Copyright information</p>
+                    <p onClick={() => openPopup("Copyright Information", textMap.copyright)}>Copyright Information</p>
                     <p onClick={() => openPopup("Privacy Policy", textMap.privacy)}>Privacy Policy</p>
                 </div>
                 <div className="footer-text">

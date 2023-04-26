@@ -15,6 +15,7 @@
     flex-direction: column;
     height: 100vh;
     margin-top: 70px;
+    color: #2A3C2C;
 }
 
 .directions-container {
@@ -28,12 +29,12 @@
 .map-image{
     width: 90%;
     height: 100%;
-    border: 2px solid white;
+    border: 2px solid #2A3C2C;
 }
 
 .chatbot-map-text{
     width: 40%;
     height: 100%;
-    border: 2px solid white;
+    border: 2px solid #2A3C2C;
     margin-left: 15px;
 }
