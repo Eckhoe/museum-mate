@@ -29,7 +29,7 @@ import { LanguageSelector, Loading } from "./Components";
 import { GenerateBasic, GenerateChat } from "./GPT-3";
 import { useSpeechSynthesis } from "react-speech-kit";
 import { getPath } from "./Directional.js";
-import { merge } from "./MapGeneration.js";
+//import { merge } from "./MapGeneration.js";
 import "./ChatBot.css";
 import "./App.css";
 //import $ from "jquery";

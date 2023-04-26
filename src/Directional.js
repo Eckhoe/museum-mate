@@ -249,7 +249,7 @@ function getLowestInOpenSet(openSet, dest) {
   return current;
 }
 
-function getPath(source, dest) {
+export function getPath(source, dest) {
   resetScores();
   let finalPath = aStar(eval(source), eval(dest));
   return finalPath;
@@ -328,7 +328,7 @@ function resetScores() {
   US2.g = Infinity;
 }
 
-module.exports = { getPath, formattedPathForVisual };
+//module.exports = { formattedPathForVisual };
 
 let ENTRANCE = new Node("ENTRANCE", 11, -3);
 let DESK = new Node("DESK", 14, 0.5);
