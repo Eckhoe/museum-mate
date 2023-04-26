@@ -1,3 +1,14 @@
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// All website layouts, designs, coding and functionality are Copyright © 2023 Robert Morabito, David Bailey, Maheen Samad, Fahad Arain, Dana Dobrosavljevic, and Jordan Bharati All right reserved.
+//
+// You may not otherwise copy, modify, or distribute this website (https://museum-mate-v1.vercel.app/) or the code contained in any manner.
+// You may not remove or alter any copyright or other notice from this code or this website (https://museum-mate-v1.vercel.app/).
+// 
+// If you have further inquiry contact:
+// Robert Morabito
+// Developer
+// hello@robertmorabito.ca
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 import {
   RemoveLines,
   SearchDB,
@@ -18,7 +29,7 @@ import { LanguageSelector, Loading } from "./Components";
 import { GenerateBasic, GenerateChat } from "./GPT-3";
 import { useSpeechSynthesis } from "react-speech-kit";
 import { getPath } from "./Directional.js";
-import { merge } from "./MapGeneration.js";
+//import { merge } from "./MapGeneration.js";
 import "./ChatBot.css";
 import "./App.css";
 //import $ from "jquery";
@@ -239,7 +250,6 @@ export const Chatbot = () => {
       toggleTTS(true);
       speak({ text: reply });
     }
-    console.log(ttsOn);
   };
 
   // toggle automatic text-to-speech on/off
@@ -249,17 +259,6 @@ export const Chatbot = () => {
   useEffect(() => {
     setInput(transcript);
   }, [transcript]);
-
-  // Sets chatbot popup default to active if on chatbot page
-  //test: if (currentUrl === "http://localhost:3000/chatbot") {
-  //live: if (currentUrl === "http://museum-mate-v1.vercel.app") {
-  useEffect(() => {
-    const currentUrl = window.location.href;
-    //console.log(currentUrl);
-    if (currentUrl === "http://museum-mate-v1.vercel.app") {
-      setToggle(true);
-    }
-  }, []);
 
   // Sets a loading animation while waiting for chabot response
   const Loader = () => {

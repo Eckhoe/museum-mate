@@ -1,3 +1,15 @@
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/* All website layouts, designs, coding and functionality are Copyright © 2023 Robert Morabito, David Bailey, Maheen Samad, Fahad Arain, Dana Dobrosavljevic, and Jordan Bharati All right reserved.
+/*
+/* You may not otherwise copy, modify, or distribute this website (https://museum-mate-v1.vercel.app/) or the code contained in any manner.
+/* You may not remove or alter any copyright or other notice from this code or this website (https://museum-mate-v1.vercel.app/).
+/* 
+/* If you have further inquiry contact:
+/* Robert Morabito
+/* Developer
+/* hello@robertmorabito.ca
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
 /* navigation bar */
 .navbar{
     display: inline-block;
@@ -16,14 +28,13 @@
     text-align: center;
     padding-bottom: 10px;
     padding-top: 10px;
-    border-radius: 25px;
+    border-radius: 20px;
     margin: 15px;
     cursor: pointer;
     min-width: 100px;
 }
 
 .logo img{
-
     padding-top: 10px;
     padding-right: 10px;
     padding-bottom: 10px;
@@ -31,13 +42,12 @@
     width: 100px;
     height: auto;
     float: left;
-
-
 }
 
 .nav-option:hover{
     background-color: white;
-    color: black;
+    color: #00244ae6;
+    border-radius: 20px;
 }
 
 a{
@@ -45,7 +55,6 @@ a{
     text-decoration: none;
     font-weight: bold;
 }
-
 
 /* image rotation */
 .image-changer-container{
@@ -67,7 +76,7 @@ a{
 /* footer */
 .footer{
     display: flex;
-    color: #2A3C2C;
+    color: #00244ae6;
     text-align: center;
     justify-content: space-around;
     width: 100%;
@@ -79,7 +88,7 @@ a{
 .footer-text{
     display: flex;
     flex-direction: column;
-    color: #2A3C2C;
+    color: #00244ae6;
     text-align: center;
     justify-content: space-around;
     white-space: pre-wrap;
@@ -96,6 +105,9 @@ a{
     padding: 20px;
     border-radius: 20px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    overflow: auto;
+    max-height: calc(100% - 200px);
+    width: fit-content;
 }
 
 .popup-header {

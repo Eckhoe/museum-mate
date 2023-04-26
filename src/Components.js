@@ -1,3 +1,14 @@
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// All website layouts, designs, coding and functionality are Copyright © 2023 Robert Morabito, David Bailey, Maheen Samad, Fahad Arain, Dana Dobrosavljevic, and Jordan Bharati All right reserved.
+//
+// You may not otherwise copy, modify, or distribute this website (https://museum-mate-v1.vercel.app/) or the code contained in any manner.
+// You may not remove or alter any copyright or other notice from this code or this website (https://museum-mate-v1.vercel.app/).
+// 
+// If you have further inquiry contact:
+// Robert Morabito
+// Developer
+// hello@robertmorabito.ca
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 import {BrowserRouter, Link, Outlet, Route, Routes} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 
@@ -102,7 +113,7 @@ const about2 =" We wanted to create a user-friendly and innovative way to help p
 const about3 = " Our chatbot is powered by the text-davinci-003 AI model, which allows us to provide accurate and informative responses to your queries in real-time. We work closely with the museum's database to ensure that all information provided is up-to-date and reliable, so you can trust the information you receive from our chatbot.";
 const about4 = " Whether you're planning a visit to the museum or simply curious about the history of Niagara on the Lake, our chatbot is here to help. Simply type in your question and let our AI do the rest. We're dedicated to making your experience with the Niagara on the Lake Museum as informative and enjoyable as possible. Thank you for using our chatbot and we hope you enjoy learning about the rich history of Niagara on the Lake!";
 
-const copyright = "Copyright © 2023 MuseumMate. All Rights Reserved. No part of this website may be reproduced, distributed, or transmitted in any form or by any means, including photocopying, recording, or other electronic or mechanical methods, without the prior written permission of the copyright owner, except in the case of brief quotations embodied in critical reviews and certain other noncommercial uses permitted by copyright law.";
+const copyright = "Copyright © 2023 Robert Morabito, David Bailey, Maheen Samad, Fahad Arain, Dana Dobrosavljevic, and Jordan Bharati All right reserved.";
 const privacyPolicy = "We respect your privacy and are committed to protecting your personal information. Any data we collect from you will be used solely for the purpose of providing you with the services you have requested and will not be shared with any third parties without your explicit consent. We will never sell or rent your information to any other organization for marketing or commercial purposes. By using our website, you consent to our privacy policy.";
 
 const Popup = ({ header, text, onClose }) => {
@@ -138,10 +149,8 @@ const Footer = () => {
 
     const textMap = {
         about: about1+about2+about3+about4,
-        groupInfo: "This is the text for the Group information option",
         copyright: copyright,
         privacy: privacyPolicy,
-        licencing: "This is the text for the Contact information option",
         resources: "chatbot icons from https://icons8.com",
     };
 
@@ -150,15 +159,11 @@ const Footer = () => {
             <div className="footer">
                 <div className="footer-text">
                     <p onClick={() => openPopup("About", textMap.about)}>About</p>
-                    <p onClick={() => openPopup("Group information", textMap.groupInfo)}>Group information</p>
-                </div>
-                <div className="footer-text">
-                    <p onClick={() => openPopup("Copyright information", textMap.copyright)}>Copyright information</p>
-                    <p onClick={() => openPopup("Privacy Policy", textMap.privacy)}>Privacy Policy</p>
-                </div>
-                <div className="footer-text">
-                    <p onClick={() => openPopup("Licencing", textMap.licencing)}>Licencing</p>
                     <p onClick={() => openPopup("Resources", textMap.resources)}>Resources</p>
+                </div>
+                <div className="footer-text">
+                    <p onClick={() => openPopup("Copyright Information", textMap.copyright)}>Copyright Information</p>
+                    <p onClick={() => openPopup("Privacy Policy", textMap.privacy)}>Privacy Policy</p>
                 </div>
             </div>
             {popupOpen && <Popup header={selectedOption} text={selectedText} onClose={closePopup} />}

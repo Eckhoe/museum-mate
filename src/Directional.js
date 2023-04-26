@@ -1,3 +1,14 @@
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// All website layouts, designs, coding and functionality are Copyright © 2023 Robert Morabito, David Bailey, Maheen Samad, Fahad Arain, Dana Dobrosavljevic, and Jordan Bharati All right reserved.
+//
+// You may not otherwise copy, modify, or distribute this website (https://museum-mate-v1.vercel.app/) or the code contained in any manner.
+// You may not remove or alter any copyright or other notice from this code or this website (https://museum-mate-v1.vercel.app/).
+// 
+// If you have further inquiry contact:
+// Robert Morabito
+// Developer
+// hello@robertmorabito.ca
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Node {
   constructor(name, x, y) {
     this.name = name; //name of the node
@@ -238,7 +249,7 @@ function getLowestInOpenSet(openSet, dest) {
   return current;
 }
 
-function getPath(source, dest) {
+export function getPath(source, dest) {
   resetScores();
   let finalPath = aStar(eval(source), eval(dest));
   return finalPath;
@@ -317,7 +328,7 @@ function resetScores() {
   US2.g = Infinity;
 }
 
-module.exports = { getPath, formattedPathForVisual };
+//module.exports = { formattedPathForVisual };
 
 let ENTRANCE = new Node("ENTRANCE", 11, -3);
 let DESK = new Node("DESK", 14, 0.5);
