@@ -148,7 +148,7 @@
 .home {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: auto;
     width: 120%;
 }
 
@@ -159,7 +159,7 @@
 }
 
 .nav-row {
-    height: 60px;
+    height: auto;
     width: 100%;
     background-color: #adb7be;
     color: #00244ae6;
@@ -184,7 +184,6 @@
     justify-content: center;
     align-items: center;
     width: 50%;
-
 }
 
 .center {
