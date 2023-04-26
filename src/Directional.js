@@ -138,23 +138,23 @@ function getCardinality(path) {
     let B = path[i - 1];
     let dx = B[0] - A[0];
     let dy = B[1] - A[1];
-    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-    if (angle < -157.5 || angle > 157.5) {
-      dirPath[i] = "west";
-    } else if (angle > -157.5 && angle < -112.5) {
-      dirPath[i] = "northwest";
-    } else if (angle > -112.5 && angle < -67.5) {
-      dirPath[i] = "north";
-    } else if (angle > -67.5 && angle < -22.5) {
+    const angle = Math.atan2(dy, dx);
+    if (angle > -Math.PI/8 && angle <= Math.PI/8) {
+      dirPath[i] = "east";
+    } else if (angle > Math.PI/8 && angle <= 3*Math.PI/8) {
       dirPath[i] = "northeast";
-    } else if (angle > -22.5 && angle < 22.5) {
-      dirPath[i] = dx >= 0 ? "east" : "west";  // use dx to determine east/west direction
-    } else if (angle >= 22.5 && angle <= 67.5) {
-      dirPath[i] = "southeast";
-    } else if (angle >= 67.5 && angle <= 112.5) {
-      dirPath[i] = "south";
-    } else {
+    } else if (angle > 3*Math.PI/8 && angle <= 5*Math.PI/8) {
+      dirPath[i] = "north";
+    } else if (angle > 5*Math.PI/8 && angle <= 7*Math.PI/8) {
+      dirPath[i] = "northwest";
+    } else if (angle > 7*Math.PI/8 || angle <= -7*Math.PI/8) {
+      dirPath[i] = "west";
+    } else if (angle > -7*Math.PI/8 && angle <= -5*Math.PI/8) {
       dirPath[i] = "southwest";
+    } else if (angle > -5*Math.PI/8 && angle <= -3*Math.PI/8) {
+      dirPath[i] = "south";
+    } else if (angle > -3*Math.PI/8 && angle <= -Math.PI/8) {
+      dirPath[i] = "southeast";
     }
 
   }
