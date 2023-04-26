@@ -149,10 +149,8 @@ const Footer = () => {
 
     const textMap = {
         about: about1+about2+about3+about4,
-        groupInfo: "This is the text for the Group information option",
         copyright: copyright,
         privacy: privacyPolicy,
-        licencing: "This is the text for the Contact information option",
         resources: "chatbot icons from https://icons8.com",
     };
 
@@ -161,15 +159,11 @@ const Footer = () => {
             <div className="footer">
                 <div className="footer-text">
                     <p onClick={() => openPopup("About", textMap.about)}>About</p>
-                    <p onClick={() => openPopup("Group Information", textMap.groupInfo)}>Group Information</p>
+                    <p onClick={() => openPopup("Resources", textMap.resources)}>Resources</p>
                 </div>
                 <div className="footer-text">
                     <p onClick={() => openPopup("Copyright Information", textMap.copyright)}>Copyright Information</p>
                     <p onClick={() => openPopup("Privacy Policy", textMap.privacy)}>Privacy Policy</p>
-                </div>
-                <div className="footer-text">
-                    <p onClick={() => openPopup("Licencing", textMap.licencing)}>Licencing</p>
-                    <p onClick={() => openPopup("Resources", textMap.resources)}>Resources</p>
                 </div>
             </div>
             {popupOpen && <Popup header={selectedOption} text={selectedText} onClose={closePopup} />}
