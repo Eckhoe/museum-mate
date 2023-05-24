@@ -7,7 +7,6 @@
 | David Bailey        |
 | Robert Morabito     |
 | Dana Dobrosavljevic |
-| Sarah Howcroft      |
 | Jordan Bharati      |
 
 # Copyright
